@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Tvi3W - AI-powered personal assistant for analyzing live interactions, presentations, meetings, and content across platforms">
+  <title>Tvi3W - Your AI Personal Assistant</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <div class="logo-icon">🧠</div>
+        <span>Tvi3W</span>
+      </div>
+      <nav class="nav">
+        <a href="#dashboard" class="nav-link active" data-page="dashboard">Dashboard</a>
+        <a href="#analysis" class="nav-link" data-page="analysis">Analysis</a>
+        <a href="#meetings" class="nav-link" data-page="meetings">Meetings</a>
+        <a href="#business" class="nav-link" data-page="business">Business</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+    <!-- Dashboard Page -->
+    <section id="dashboard-page" class="page active">
+      <!-- Hero Section -->
+      <div class="hero">
+        <h1>Welcome to Tvi3W</h1>
+        <p class="hero-subtitle">Your AI-powered personal assistant that analyzes live interactions, presentations, meetings, and content across platforms with real-time insights.</p>
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+          <button class="btn btn-primary" onclick="app.startAnalysis()">
+            <span>🚀</span>
+            Start Analysis
+          </button>
+          <button class="btn btn-outline" onclick="app.navigateTo('meetings')">
+            <span>📅</span>
+            Schedule Meeting
+          </button>
+        </div>
+      </div>
+
+      <!-- Platform Integration Cards -->
+      <div class="mb-3">
+        <h2 class="text-center mb-2">Platform Integrations</h2>
+        <div class="grid grid-3">
+          <div class="glass-card platform-card" onclick="app.connectPlatform('linkedin')">
+            <div class="platform-icon" style="background: linear-gradient(135deg, #0077b5 0%, #00a0dc 100%);">
+              💼
+            </div>
+            <h3>LinkedIn</h3>
+            <p>Analyze professional interactions and networking opportunities</p>
+            <div class="mt-1">
+              <span class="status-badge active">Connected</span>
+            </div>
+          </div>
+
+          <div class="glass-card platform-card" onclick="app.connectPlatform('twitter')">
+            <div class="platform-icon" style="background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%);">
+              🐦
+            </div>
+            <h3>Twitter</h3>
+            <p>Track conversations and trending topics in real-time</p>
+            <div class="mt-1">
+              <span class="status-badge active">Connected</span>
+            </div>
+          </div>
+
+          <div class="glass-card platform-card" onclick="app.connectPlatform('gmail')">
+            <div class="platform-icon" style="background: linear-gradient(135deg, #ea4335 0%, #fbbc04 100%);">
+              ✉️
+            </div>
+            <h3>Gmail</h3>
+            <p>Smart email analysis and response suggestions</p>
+            <div class="mt-1">
+              <span class="status-badge pending">Setup Required</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Core Features -->
+      <div class="mb-3">
+        <h2 class="text-center mb-2">Core Features</h2>
+        <div class="grid grid-4">
+          <div class="glass-card feature-card">
+            <div class="feature-icon">
+              🎯
+            </div>
+            <h4>Real-Time Analysis</h4>
+            <p>Decode live presentations and discussions with AI-powered insights</p>
+          </div>
+
+          <div class="glass-card feature-card">
+            <div class="feature-icon" style="background: var(--accent-gradient);">
+              💡
+            </div>
+            <h4>Smart Questions</h4>
+            <p>Dynamic question generation based on context and conversation flow</p>
+          </div>
+
+          <div class="glass-card feature-card">
+            <div class="feature-icon" style="background: var(--primary-gradient);">
+              📊
+            </div>
+            <h4>Business Insights</h4>
+            <p>Shark Tank-style analysis for pitches and business discussions</p>
+          </div>
+
+          <div class="glass-card feature-card">
+            <div class="feature-icon" style="background: var(--secondary-gradient);">
+              🔍
+            </div>
+            <h4>Passive Research</h4>
+            <p>Background information retrieval without interrupting your flow</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="glass-card">
+        <h3>Recent Activity</h3>
+        <div id="recent-activity">
+          <div class="transcript-message">
+            <div class="speaker">LinkedIn Analysis</div>
+            <p>Analyzed 3 professional posts and identified 5 networking opportunities</p>
+            <small style="color: var(--text-tertiary);">2 hours ago</small>
+          </div>
+          <div class="transcript-message">
+            <div class="speaker">Meeting Companion</div>
+            <p>Assisted in team meeting with 12 dynamic questions and 8 key insights</p>
+            <small style="color: var(--text-tertiary);">5 hours ago</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Analysis Page -->
+    <section id="analysis-page" class="page hidden">
+      <div class="hero">
+        <h1>Real-Time Analysis</h1>
+        <p class="hero-subtitle">AI-powered content analysis with actionable insights</p>
+      </div>
+
+      <div class="analysis-container">
+        <div class="content-display">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3>Content Display</h3>
+            <div>
+              <button class="btn btn-primary" onclick="app.analyzeContent()">
+                <span>🔍</span>
+                Analyze
+              </button>
+            </div>
+          </div>
+          
+          <div id="content-area" style="min-height: 300px; padding: 1.5rem; background: var(--surface-glass); border-radius: var(--border-radius-lg);">
+            <p style="color: var(--text-tertiary); text-align: center; padding: 3rem;">
+              Select a platform or paste content to begin analysis...
+            </p>
+          </div>
+
+          <div class="mt-2">
+            <h4>Sentiment Analysis</h4>
+            <div class="sentiment-meter">
+              <div class="sentiment-fill" id="sentiment-bar" style="width: 0%"></div>
+            </div>
+            <p id="sentiment-text" style="color: var(--text-tertiary); font-size: var(--font-size-sm);">No analysis yet</p>
+          </div>
+        </div>
+
+        <div class="insights-panel">
+          <div class="glass-card">
+            <h4>AI Insights</h4>
+            <div id="insights-container">
+              <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">
+                Insights will appear here after analysis...
+              </p>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <h4>Quick Actions</h4>
+            <button class="btn btn-secondary" style="width: 100%; margin-bottom: 0.5rem;" onclick="app.saveInsight()">
+              💾 Save Insight
+            </button>
+            <button class="btn btn-outline" style="width: 100%;" onclick="app.shareInsight()">
+              📤 Share
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Meetings Page -->
+    <section id="meetings-page" class="page hidden">
+      <div class="hero">
+        <h1>Meeting Companion</h1>
+        <p class="hero-subtitle">Dynamic questions, real-time notes, and passive research</p>
+      </div>
+
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <button class="btn btn-primary" id="meeting-toggle" onclick="app.toggleMeeting()">
+          <span>▶️</span>
+          Start Meeting
+        </button>
+      </div>
+
+      <div class="meeting-layout">
+        <div>
+          <div class="glass-card" style="margin-bottom: 1.5rem;">
+            <h3>Live Transcript</h3>
+            <div class="transcript-area" id="transcript">
+              <p style="color: var(--text-tertiary); text-align: center;">
+                Start a meeting to begin transcription...
+              </p>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <h3>Smart Notes</h3>
+            <div id="smart-notes" style="min-height: 150px;">
+              <p style="color: var(--text-tertiary);">Key points will be captured automatically...</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-panel">
+          <div class="glass-card">
+            <h4>Dynamic Questions</h4>
+            <div id="question-bubbles" style="min-height: 200px;">
+              <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">
+                Questions will appear as the conversation flows...
+              </p>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <h4>Passive Research</h4>
+            <div id="research-panel" style="min-height: 200px;">
+              <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">
+                Background information will be retrieved automatically...
+              </p>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <h4>Meeting Stats</h4>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <div>
+                <small style="color: var(--text-tertiary);">Duration</small>
+                <div style="font-size: var(--font-size-xl); font-weight: 600;" id="meeting-duration">00:00</div>
+              </div>
+              <div>
+                <small style="color: var(--text-tertiary);">Questions Generated</small>
+                <div style="font-size: var(--font-size-xl); font-weight: 600;" id="questions-count">0</div>
+              </div>
+              <div>
+                <small style="color: var(--text-tertiary);">Key Points</small>
+                <div style="font-size: var(--font-size-xl); font-weight: 600;" id="notes-count">0</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Business Page -->
+    <section id="business-page" class="page hidden">
+      <div class="hero">
+        <h1>Business Tools</h1>
+        <p class="hero-subtitle">Manage contracts, venues, and professional connections</p>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="glass-card">
+          <h3>📋 Contract Manager</h3>
+          <p style="margin-bottom: 1.5rem;">Track agreements, signings, and important documents</p>
+          
+          <div id="contracts-list">
+            <div class="transcript-message">
+              <div class="speaker">Partnership Agreement - TechCorp</div>
+              <p>Status: Pending Signature</p>
+              <span class="status-badge pending">Pending</span>
+            </div>
+            <div class="transcript-message">
+              <div class="speaker">NDA - Innovation Labs</div>
+              <p>Status: Signed & Active</p>
+              <span class="status-badge active">Active</span>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="app.addContract()">
+            ➕ Add Contract
+          </button>
+        </div>
+
+        <div class="glass-card">
+          <h3>📍 Venue & Scheduling</h3>
+          <p style="margin-bottom: 1.5rem;">Manage meeting locations and invitations</p>
+          
+          <div id="venues-list">
+            <div class="transcript-message">
+              <div class="speaker">Q4 Strategy Meeting</div>
+              <p>📍 Conference Room A, Downtown Office</p>
+              <small style="color: var(--text-tertiary);">Dec 15, 2025 - 2:00 PM</small>
+            </div>
+            <div class="transcript-message">
+              <div class="speaker">Client Presentation</div>
+              <p>📍 Virtual - Zoom Link</p>
+              <small style="color: var(--text-tertiary);">Dec 20, 2025 - 10:00 AM</small>
+            </div>
+          </div>
+
+          <button class="btn btn-secondary" style="width: 100%; margin-top: 1rem;" onclick="app.scheduleVenue()">
+            📅 Schedule Venue
+          </button>
+        </div>
+
+        <div class="glass-card">
+          <h3>👥 Contact Hub</h3>
+          <p style="margin-bottom: 1.5rem;">Professional network and fellowship management</p>
+          
+          <div id="contacts-list">
+            <div class="transcript-message">
+              <div class="speaker">Sarah Johnson - CEO, StartupX</div>
+              <p>Last interaction: LinkedIn message about collaboration</p>
+              <small style="color: var(--text-tertiary);">2 days ago</small>
+            </div>
+            <div class="transcript-message">
+              <div class="speaker">Michael Chen - Investor</div>
+              <p>Last interaction: Coffee meeting notes</p>
+              <small style="color: var(--text-tertiary);">1 week ago</small>
+            </div>
+          </div>
+
+          <button class="btn btn-outline" style="width: 100%; margin-top: 1rem;" onclick="app.addContact()">
+            ➕ Add Contact
+          </button>
+        </div>
+
+        <div class="glass-card">
+          <h3>🦈 Shark Tank Analysis</h3>
+          <p style="margin-bottom: 1.5rem;">Pitch analysis and implementation roadmap</p>
+          
+          <div style="padding: 1rem; background: var(--surface-glass); border-radius: var(--border-radius-md); margin-bottom: 1rem;">
+            <h4 style="font-size: var(--font-size-base); margin-bottom: 0.5rem;">Latest Analysis</h4>
+            <p style="font-size: var(--font-size-sm); color: var(--text-tertiary);">
+              <strong>Strengths:</strong> Clear value proposition, strong market research<br>
+              <strong>Concerns:</strong> Scalability questions, competitive landscape<br>
+              <strong>Recommendation:</strong> Focus on MVP and early adopters
+            </p>
+          </div>
+
+          <button class="btn btn-primary" style="width: 100%;" onclick="app.analyzePitch()">
+            🎯 Analyze New Pitch
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- JavaScript -->
+  <script src="app.js"></script>
+</body>
+</html>
