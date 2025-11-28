@@ -4,7 +4,7 @@
 ![Status](https://img.shields.io/badge/Status-In%20Development-14b8a6?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-8b5cf6?style=for-the-badge)
 
-**Tvi3W** is a revolutionary AI-powered personal assistant that analyzes live interactions, presentations, meetings, and content across platforms with real-time insights.
+**Tvi3W** is a  revolutionary AI-powered personal assistant that analyzes live interactions, presentations, meetings, and content across platforms with real-time insights.
 
 ## 🚀 Features
 
