@@ -1,20 +1,29 @@
 import express from 'express';
 import cors from 'cors';
-import helmet from 'helmet';
 import dotenv from 'dotenv';
-import { rateLimit } from 'express-rate-limit';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import bodyParser from 'body-parser';
+import session from 'express-session';
+import passport from '../config/passport.js';
+import { sequelize } from './models/index.js';
+import { createServer } from 'http';
+import { initSocket } from '../services/socket.js';
 
-// Import routes
+// Import Routes
 import analysisRoutes from './routes/analysis.js';
 import meetingRoutes from './routes/meeting.js';
 import businessRoutes from './routes/business.js';
+import authRoutes from './routes/auth.js';
 
-// Load environment variables
 dotenv.config();
 
 const app = express();
+const httpServer = createServer(app);
 const PORT = process.env.PORT || 3000;
+
+// Initialize Socket.IO
+initSocket(httpServer);
 
 // Security middleware
 app.use(helmet());
@@ -25,6 +34,21 @@ const corsOptions = {
     credentials: true
 };
 app.use(cors(corsOptions));
+
+// Session configuration
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'your_session_secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+}));
+
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Rate limiting
 const limiter = rateLimit({
@@ -39,6 +63,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // API Routes
+app.use('/auth', authRoutes);
 app.use('/api/analysis', analysisRoutes);
 app.use('/api/meeting', meetingRoutes);
 app.use('/api/business', businessRoutes);
@@ -67,33 +92,27 @@ app.get('/', (req, res) => {
     });
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error('Error:', err);
-    res.status(err.status || 500).json({
-        error: {
-            message: err.message || 'Internal server error',
-            status: err.status || 500
-        }
-    });
-});
+// Database Connection and Server Start
+const startServer = async () => {
+    try {
+        await sequelize.authenticate();
+        console.log('✅ PostgreSQL Database connected successfully');
 
-// 404 handler
-app.use((req, res) => {
-    res.status(404).json({
-        error: {
-            message: 'Endpoint not found',
-            status: 404
-        }
-    });
-});
+        // Sync models (create tables if they don't exist)
+        await sequelize.sync({ alter: true });
+        console.log('✅ Database models synced');
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`🚀 Tvi3W API Server running on port ${PORT}`);
-    console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`🔗 API URL: http://localhost:${PORT}`);
-    console.log(`✅ Health check: http://localhost:${PORT}/api/health`);
-});
+        httpServer.listen(PORT, () => {
+            console.log(`🚀 Tvi3W API Server running on port ${PORT}`);
+            console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+            console.log(`🔗 API URL: http://localhost:${PORT}`);
+        });
+    } catch (error) {
+        console.error('❌ Database connection failed:', error.message);
+        process.exit(1);
+    }
+};
+
+startServer();
 
 export default app;

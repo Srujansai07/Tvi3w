@@ -1,5 +1,6 @@
 import express from 'express';
 import geminiService from '../services/gemini.js';
+import { Analysis } from '../models/index.js';
 
 const router = express.Router();
 
@@ -19,9 +20,20 @@ router.post('/content', async (req, res) => {
 
         const analysis = await geminiService.analyzeContent(content, platform || 'general');
 
+        // Save to database
+        const savedRecord = await Analysis.create({
+            content,
+            platform: platform || 'general',
+            sentimentScore: analysis.sentiment.confidence,
+            sentimentType: analysis.sentiment.type,
+            insights: analysis.insights,
+            rawResponse: analysis
+        });
+
         res.json({
             success: true,
             data: analysis,
+            recordId: savedRecord.id,
             timestamp: new Date().toISOString()
         });
     } catch (error) {
@@ -48,6 +60,9 @@ router.post('/sentiment', async (req, res) => {
         }
 
         const analysis = await geminiService.analyzeContent(content);
+
+        // We don't necessarily save every quick sentiment check, but we could if needed.
+        // For now, we'll keep it lightweight.
 
         res.json({
             success: true,
@@ -81,6 +96,16 @@ router.post('/insights', async (req, res) => {
 
         const analysis = await geminiService.analyzeContent(content, platform);
 
+        // Save to database as a new analysis record
+        const savedRecord = await Analysis.create({
+            content,
+            platform: platform || 'general',
+            sentimentScore: analysis.sentiment.confidence,
+            sentimentType: analysis.sentiment.type,
+            insights: analysis.insights,
+            rawResponse: analysis
+        });
+
         res.json({
             success: true,
             data: {
@@ -89,6 +114,7 @@ router.post('/insights', async (req, res) => {
                 trendAnalysis: analysis.trendAnalysis,
                 networkOpportunities: analysis.networkOpportunities
             },
+            recordId: savedRecord.id,
             timestamp: new Date().toISOString()
         });
     } catch (error) {

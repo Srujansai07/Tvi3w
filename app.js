@@ -20,6 +20,38 @@ const app = {
     this.setupNavigation();
     this.loadRecentActivity();
     this.setupEventListeners();
+    this.initSocket();
+  },
+
+  // Socket.IO Connection
+  initSocket() {
+    try {
+      // Connect to backend socket server
+      this.socket = io('http://localhost:3000');
+
+      this.socket.on('connect', () => {
+        console.log('🔌 WebSocket connected');
+        this.showNotification('🟢 Real-time connection active', 'success');
+      });
+
+      this.socket.on('disconnect', () => {
+        console.log('❌ WebSocket disconnected');
+        this.showNotification('🔴 Real-time connection lost', 'error');
+      });
+
+      // Listen for real-time updates
+      this.socket.on('analysis_update', (data) => {
+        this.handleAnalysisUpdate(data);
+      });
+
+    } catch (error) {
+      console.error('Socket initialization failed:', error);
+    }
+  },
+
+  handleAnalysisUpdate(data) {
+    this.showNotification(`🔔 New update: ${data.message}`, 'info');
+    // Update UI based on data...
   },
 
   // Navigation System

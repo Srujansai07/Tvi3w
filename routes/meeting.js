@@ -1,5 +1,6 @@
 import express from 'express';
 import geminiService from '../services/gemini.js';
+import { Meeting } from '../models/index.js';
 
 const router = express.Router();
 
@@ -18,6 +19,9 @@ router.post('/questions', async (req, res) => {
         }
 
         const questions = await geminiService.generateQuestions(context, type || 'all');
+
+        // We might want to save these questions if they are part of an active meeting
+        // For now, we'll just return them
 
         res.json({
             success: true,
@@ -97,11 +101,11 @@ router.post('/research', async (req, res) => {
 
 /**
  * POST /api/meeting/summarize
- * Summarize meeting transcript
+ * Summarize meeting transcript and save to DB
  */
 router.post('/summarize', async (req, res) => {
     try {
-        const { transcript } = req.body;
+        const { transcript, title, startTime, endTime } = req.body;
 
         if (!transcript) {
             return res.status(400).json({
@@ -110,13 +114,25 @@ router.post('/summarize', async (req, res) => {
         }
 
         const keyPoints = await geminiService.extractKeyPoints(transcript);
+        const summary = keyPoints.join('. ');
+
+        // Save meeting record
+        const meeting = await Meeting.create({
+            title: title || 'Untitled Meeting',
+            startTime: startTime || new Date(),
+            endTime: endTime || new Date(),
+            transcript,
+            keyPoints,
+            summary
+        });
 
         res.json({
             success: true,
             data: {
-                summary: keyPoints.join('. '),
+                summary,
                 keyPoints
             },
+            meetingId: meeting.id,
             timestamp: new Date().toISOString()
         });
     } catch (error) {

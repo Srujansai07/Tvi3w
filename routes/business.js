@@ -1,5 +1,6 @@
 import express from 'express';
 import geminiService from '../services/gemini.js';
+import { BusinessRecord } from '../models/index.js';
 
 const router = express.Router();
 
@@ -19,9 +20,18 @@ router.post('/pitch', async (req, res) => {
 
         const analysis = await geminiService.analyzePitch(pitch);
 
+        // Save pitch analysis
+        const record = await BusinessRecord.create({
+            type: 'pitch',
+            title: 'Pitch Analysis',
+            content: pitch,
+            analysis: analysis
+        });
+
         res.json({
             success: true,
             data: analysis,
+            recordId: record.id,
             timestamp: new Date().toISOString()
         });
     } catch (error) {
@@ -39,7 +49,7 @@ router.post('/pitch', async (req, res) => {
  */
 router.post('/contract-summary', async (req, res) => {
     try {
-        const { contractText } = req.body;
+        const { contractText, title } = req.body;
 
         if (!contractText) {
             return res.status(400).json({
@@ -49,12 +59,21 @@ router.post('/contract-summary', async (req, res) => {
 
         const keyPoints = await geminiService.extractKeyPoints(contractText);
 
+        // Save contract record
+        const record = await BusinessRecord.create({
+            type: 'contract',
+            title: title || 'Contract Summary',
+            content: contractText,
+            analysis: { keyPoints, summary: keyPoints.join('. ') }
+        });
+
         res.json({
             success: true,
             data: {
                 keyPoints,
                 summary: keyPoints.join('. ')
             },
+            recordId: record.id,
             timestamp: new Date().toISOString()
         });
     } catch (error) {
@@ -82,9 +101,18 @@ router.post('/contact-insights', async (req, res) => {
 
         const research = await geminiService.passiveResearch(contactInfo);
 
+        // Save contact research
+        const record = await BusinessRecord.create({
+            type: 'contact',
+            title: `Contact: ${contactInfo}`,
+            content: contactInfo,
+            analysis: research
+        });
+
         res.json({
             success: true,
             data: research,
+            recordId: record.id,
             timestamp: new Date().toISOString()
         });
     } catch (error) {
@@ -112,9 +140,18 @@ router.post('/venue-suggestions', async (req, res) => {
 
         const suggestions = await geminiService.passiveResearch(`venue for ${requirements}`);
 
+        // Save venue search
+        const record = await BusinessRecord.create({
+            type: 'venue',
+            title: `Venue Search: ${requirements}`,
+            content: requirements,
+            analysis: suggestions
+        });
+
         res.json({
             success: true,
             data: suggestions,
+            recordId: record.id,
             timestamp: new Date().toISOString()
         });
     } catch (error) {
