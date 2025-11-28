@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Tvi3W - AI-powered personal assistant for analyzing live interactions, presentations, meetings, and content across platforms">
+  <meta name="description"
+    content="Tvi3W - AI-powered personal assistant for analyzing live interactions, presentations, meetings, and content across platforms">
   <title>Tvi3W - Your AI Personal Assistant</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="api-client.js"></script>
 </head>
+
 <body>
   <!-- Header -->
   <header class="header">
@@ -31,7 +35,8 @@
       <!-- Hero Section -->
       <div class="hero">
         <h1>Welcome to Tvi3W</h1>
-        <p class="hero-subtitle">Your AI-powered personal assistant that analyzes live interactions, presentations, meetings, and content across platforms with real-time insights.</p>
+        <p class="hero-subtitle">Your AI-powered personal assistant that analyzes live interactions, presentations,
+          meetings, and content across platforms with real-time insights.</p>
         <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
           <button class="btn btn-primary" onclick="app.startAnalysis()">
             <span>🚀</span>
@@ -157,8 +162,9 @@
               </button>
             </div>
           </div>
-          
-          <div id="content-area" style="min-height: 300px; padding: 1.5rem; background: var(--surface-glass); border-radius: var(--border-radius-lg);">
+
+          <div id="content-area"
+            style="min-height: 300px; padding: 1.5rem; background: var(--surface-glass); border-radius: var(--border-radius-lg);">
             <p style="color: var(--text-tertiary); text-align: center; padding: 3rem;">
               Select a platform or paste content to begin analysis...
             </p>
@@ -169,7 +175,8 @@
             <div class="sentiment-meter">
               <div class="sentiment-fill" id="sentiment-bar" style="width: 0%"></div>
             </div>
-            <p id="sentiment-text" style="color: var(--text-tertiary); font-size: var(--font-size-sm);">No analysis yet</p>
+            <p id="sentiment-text" style="color: var(--text-tertiary); font-size: var(--font-size-sm);">No analysis yet
+            </p>
           </div>
         </div>
 
@@ -280,7 +287,7 @@
         <div class="glass-card">
           <h3>📋 Contract Manager</h3>
           <p style="margin-bottom: 1.5rem;">Track agreements, signings, and important documents</p>
-          
+
           <div id="contracts-list">
             <div class="transcript-message">
               <div class="speaker">Partnership Agreement - TechCorp</div>
@@ -302,7 +309,7 @@
         <div class="glass-card">
           <h3>📍 Venue & Scheduling</h3>
           <p style="margin-bottom: 1.5rem;">Manage meeting locations and invitations</p>
-          
+
           <div id="venues-list">
             <div class="transcript-message">
               <div class="speaker">Q4 Strategy Meeting</div>
@@ -324,7 +331,7 @@
         <div class="glass-card">
           <h3>👥 Contact Hub</h3>
           <p style="margin-bottom: 1.5rem;">Professional network and fellowship management</p>
-          
+
           <div id="contacts-list">
             <div class="transcript-message">
               <div class="speaker">Sarah Johnson - CEO, StartupX</div>
@@ -346,8 +353,9 @@
         <div class="glass-card">
           <h3>🦈 Shark Tank Analysis</h3>
           <p style="margin-bottom: 1.5rem;">Pitch analysis and implementation roadmap</p>
-          
-          <div style="padding: 1rem; background: var(--surface-glass); border-radius: var(--border-radius-md); margin-bottom: 1rem;">
+
+          <div
+            style="padding: 1rem; background: var(--surface-glass); border-radius: var(--border-radius-md); margin-bottom: 1rem;">
             <h4 style="font-size: var(--font-size-base); margin-bottom: 0.5rem;">Latest Analysis</h4>
             <p style="font-size: var(--font-size-sm); color: var(--text-tertiary);">
               <strong>Strengths:</strong> Clear value proposition, strong market research<br>
@@ -367,4 +375,5 @@
   <!-- JavaScript -->
   <script src="app.js"></script>
 </body>
+
 </html>

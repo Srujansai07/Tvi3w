@@ -4,9 +4,11 @@ const app = {
   // Application State
   state: {
     currentPage: 'dashboard',
+    currentPlatform: null,
     meetingActive: false,
     meetingStartTime: null,
     meetingDuration: 0,
+    meetingTranscript: '',
     questionsGenerated: 0,
     notesCount: 0,
     analysisData: null
@@ -45,7 +47,7 @@ const app = {
     document.querySelectorAll('.page').forEach(pageEl => {
       pageEl.classList.add('hidden');
     });
-    
+
     const targetPage = document.getElementById(`${page}-page`);
     if (targetPage) {
       targetPage.classList.remove('hidden');
@@ -63,7 +65,7 @@ const app = {
     };
 
     this.showNotification(`Connecting to ${platformNames[platform]}...`, 'info');
-    
+
     // Simulate connection
     setTimeout(() => {
       this.showNotification(`✓ Connected to ${platformNames[platform]}`, 'success');
@@ -74,6 +76,8 @@ const app = {
 
   simulatePlatformContent(platform) {
     const contentArea = document.getElementById('content-area');
+    this.state.currentPlatform = platform; // Store for API calls
+
     const sampleContent = {
       linkedin: {
         title: 'LinkedIn Post Analysis',
@@ -114,50 +118,41 @@ const app = {
 
     const content = sampleContent[platform];
     contentArea.innerHTML = content.content;
-    
+
     // Auto-analyze after a moment
     setTimeout(() => this.analyzeContent(), 1000);
   },
 
   // Content Analysis
-  analyzeContent() {
-    this.showNotification('🔍 Analyzing content...', 'info');
-    
+  async analyzeContent() {
+    this.showNotification('🔍 Analyzing content with AI...', 'info');
+
     const sentimentBar = document.getElementById('sentiment-bar');
     const sentimentText = document.getElementById('sentiment-text');
     const insightsContainer = document.getElementById('insights-container');
+    const contentArea = document.getElementById('content-area');
 
-    // Simulate analysis
-    setTimeout(() => {
+    // Get content from the display area
+    const content = contentArea.textContent || contentArea.innerText;
+
+    try {
+      // Call real API
+      const response = await api.analyzeContent(content, this.state.currentPlatform || 'general');
+      const analysis = response.data;
+
       // Update sentiment
-      const sentiment = 75;
+      const sentiment = analysis.sentiment.confidence || 75;
       sentimentBar.style.width = `${sentiment}%`;
-      sentimentText.textContent = `Positive sentiment detected (${sentiment}% confidence)`;
-      sentimentText.style.color = 'var(--success-500)';
+
+      const sentimentColor = analysis.sentiment.type === 'positive' ? 'var(--success-500)' :
+        analysis.sentiment.type === 'negative' ? 'var(--danger-500)' :
+          'var(--warning-500)';
+
+      sentimentText.textContent = `${analysis.sentiment.type.charAt(0).toUpperCase() + analysis.sentiment.type.slice(1)} sentiment detected (${sentiment}% confidence)`;
+      sentimentText.style.color = sentimentColor;
 
       // Generate insights
-      const insights = [
-        {
-          icon: '🎯',
-          title: 'Key Opportunity',
-          text: 'High engagement rate suggests strong audience interest. Consider follow-up content.'
-        },
-        {
-          icon: '💡',
-          title: 'Suggested Action',
-          text: 'Respond to top comments within 2 hours to maximize visibility and engagement.'
-        },
-        {
-          icon: '📊',
-          title: 'Trend Analysis',
-          text: 'Topic aligns with current industry trends. Potential for viral reach.'
-        },
-        {
-          icon: '🔗',
-          title: 'Network Effect',
-          text: 'Several influential accounts in your network have engaged. Consider direct outreach.'
-        }
-      ];
+      const insights = analysis.insights || [];
 
       insightsContainer.innerHTML = insights.map(insight => `
         <div class="insight-item">
@@ -171,8 +166,62 @@ const app = {
         </div>
       `).join('');
 
-      this.showNotification('✓ Analysis complete!', 'success');
-    }, 2000);
+      this.state.analysisData = analysis;
+      this.showNotification('✓ AI analysis complete!', 'success');
+    } catch (error) {
+      console.error('Analysis failed:', error);
+      this.showNotification('⚠️ Analysis failed. Using fallback mode.', 'error');
+
+      // Fallback to simulated analysis if API fails
+      this.analyzeContentFallback();
+    }
+  },
+
+  analyzeContentFallback() {
+    const sentimentBar = document.getElementById('sentiment-bar');
+    const sentimentText = document.getElementById('sentiment-text');
+    const insightsContainer = document.getElementById('insights-container');
+
+    // Fallback analysis
+    const sentiment = 75;
+    sentimentBar.style.width = `${sentiment}%`;
+    sentimentText.textContent = `Positive sentiment detected (${sentiment}% confidence)`;
+    sentimentText.style.color = 'var(--success-500)';
+
+    const insights = [
+      {
+        icon: '🎯',
+        title: 'Key Opportunity',
+        text: 'High engagement rate suggests strong audience interest. Consider follow-up content.'
+      },
+      {
+        icon: '💡',
+        title: 'Suggested Action',
+        text: 'Respond to top comments within 2 hours to maximize visibility and engagement.'
+      },
+      {
+        icon: '📊',
+        title: 'Trend Analysis',
+        text: 'Topic aligns with current industry trends. Potential for viral reach.'
+      },
+      {
+        icon: '🔗',
+        title: 'Network Effect',
+        text: 'Several influential accounts in your network have engaged. Consider direct outreach.'
+      }
+    ];
+
+    insightsContainer.innerHTML = insights.map(insight => `
+      <div class="insight-item">
+        <div style="display: flex; align-items: start; gap: 0.75rem;">
+          <span style="font-size: var(--font-size-xl);">${insight.icon}</span>
+          <div>
+            <h5 style="margin-bottom: 0.25rem; font-size: var(--font-size-base);">${insight.title}</h5>
+            <p style="margin: 0; font-size: var(--font-size-sm); color: var(--text-tertiary);">${insight.text}</p>
+          </div>
+        </div>
+      </div>
+    `).join('');
   },
 
   // Meeting Companion
@@ -196,7 +245,7 @@ const app = {
   startMeeting() {
     this.state.meetingStartTime = Date.now();
     this.showNotification('🎙️ Meeting started - AI companion active', 'success');
-    
+
     // Start duration counter
     this.meetingTimer = setInterval(() => {
       this.updateMeetingDuration();
@@ -217,7 +266,7 @@ const app = {
     const elapsed = Date.now() - this.state.meetingStartTime;
     const minutes = Math.floor(elapsed / 60000);
     const seconds = Math.floor((elapsed % 60000) / 1000);
-    document.getElementById('meeting-duration').textContent = 
+    document.getElementById('meeting-duration').textContent =
       `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   },
 
@@ -231,6 +280,8 @@ const app = {
     ];
 
     transcript.innerHTML = '';
+    this.state.meetingTranscript = '';
+
     messages.forEach((msg, index) => {
       setTimeout(() => {
         const msgEl = document.createElement('div');
@@ -242,6 +293,9 @@ const app = {
         transcript.appendChild(msgEl);
         transcript.scrollTop = transcript.scrollHeight;
 
+        // Add to transcript for AI processing
+        this.state.meetingTranscript += `${msg.speaker}: ${msg.text}\n`;
+
         // Generate notes for important points
         if (index % 2 === 0) {
           this.addSmartNote(msg.text);
@@ -250,27 +304,70 @@ const app = {
     });
   },
 
-  generateDynamicQuestions() {
+  async generateDynamicQuestions() {
     const questionsContainer = document.getElementById('question-bubbles');
+    questionsContainer.innerHTML = '<h5 style="margin-bottom: 1rem; font-size: var(--font-size-sm); color: var(--text-tertiary);">Generating AI questions...</h5>';
+
+    try {
+      // Use transcript as context for AI question generation
+      const context = this.state.meetingTranscript || 'Q4 strategy meeting discussion';
+      const response = await api.generateQuestions(context, 'all');
+      const questions = response.data;
+
+      questionsContainer.innerHTML = '<h5 style="margin-bottom: 1rem; font-size: var(--font-size-sm); color: var(--text-tertiary);">AI-Generated Questions:</h5>';
+
+      const questionTypes = [
+        { type: 'professional', questions: questions.professional || [] },
+        { type: 'social', questions: questions.social || [] },
+        { type: 'humorous', questions: questions.humorous || [] }
+      ];
+
+      questionTypes.forEach((category, catIndex) => {
+        category.questions.forEach((question, qIndex) => {
+          setTimeout(() => {
+            const bubble = document.createElement('div');
+            bubble.className = `question-bubble ${category.type}`;
+            bubble.textContent = question;
+            bubble.onclick = () => this.useQuestion(question);
+            questionsContainer.appendChild(bubble);
+
+            this.state.questionsGenerated++;
+            document.getElementById('questions-count').textContent = this.state.questionsGenerated;
+          }, (catIndex * 3 + qIndex) * 1500);
+        });
+      });
+    } catch (error) {
+      console.error('Failed to generate questions:', error);
+      this.generateDynamicQuestionsFallback(questionsContainer);
+    }
+  },
+
+  generateDynamicQuestionsFallback(container) {
     const questionTypes = [
-      { type: 'professional', questions: [
-        'What metrics are we using to measure success?',
-        'How does this align with our annual goals?',
-        'What resources do we need to allocate?'
-      ]},
-      { type: 'social', questions: [
-        'How is everyone feeling about the timeline?',
-        'What challenges are teams facing?',
-        'Any concerns we should address?'
-      ]},
-      { type: 'humorous', questions: [
-        'Should we celebrate with pizza when we hit our targets? 🍕',
-        'Who\'s bringing the coffee for late-night sessions? ☕',
-        'Is this the part where we pretend to understand the spreadsheet? 📊'
-      ]}
+      {
+        type: 'professional', questions: [
+          'What metrics are we using to measure success?',
+          'How does this align with our annual goals?',
+          'What resources do we need to allocate?'
+        ]
+      },
+      {
+        type: 'social', questions: [
+          'How is everyone feeling about the timeline?',
+          'What challenges are teams facing?',
+          'Any concerns we should address?'
+        ]
+      },
+      {
+        type: 'humorous', questions: [
+          'Should we celebrate with pizza when we hit our targets? 🍕',
+          'Who\'s bringing the coffee for late-night sessions? ☕',
+          'Is this the part where we pretend to understand the spreadsheet? 📊'
+        ]
+      }
     ];
 
-    questionsContainer.innerHTML = '<h5 style="margin-bottom: 1rem; font-size: var(--font-size-sm); color: var(--text-tertiary);">Suggested Questions:</h5>';
+    container.innerHTML = '<h5 style="margin-bottom: 1rem; font-size: var(--font-size-sm); color: var(--text-tertiary);">Suggested Questions:</h5>';
 
     questionTypes.forEach((category, catIndex) => {
       category.questions.forEach((question, qIndex) => {
@@ -279,11 +376,11 @@ const app = {
           bubble.className = `question-bubble ${category.type}`;
           bubble.textContent = question;
           bubble.onclick = () => this.useQuestion(question);
-          questionsContainer.appendChild(bubble);
-          
+          container.appendChild(bubble);
+
           this.state.questionsGenerated++;
           document.getElementById('questions-count').textContent = this.state.questionsGenerated;
-        }, (catIndex * 3 + qIndex) * 2000);
+        }, (catIndex * 3 + qIndex) * 1500);
       });
     });
   },
@@ -308,27 +405,46 @@ const app = {
     document.getElementById('notes-count').textContent = this.state.notesCount;
   },
 
-  simulatePassiveResearch() {
+  async simulatePassiveResearch() {
     const researchPanel = document.getElementById('research-panel');
-    const researchItems = [
-      { title: 'Market Trends', info: 'AI assistant market projected to grow 35% YoY' },
-      { title: 'Competitor Analysis', info: 'Top 3 competitors: AssistAI, SmartHelper, AICompanion' },
-      { title: 'Industry Insights', info: 'Real-time analysis features are becoming standard' }
-    ];
+    const topics = ['AI assistant market trends', 'Competitor analysis in AI space', 'Real-time analysis technology'];
 
     researchPanel.innerHTML = '';
-    researchItems.forEach((item, index) => {
-      setTimeout(() => {
-        const itemEl = document.createElement('div');
-        itemEl.className = 'fade-in';
-        itemEl.style.marginBottom = '1rem';
-        itemEl.innerHTML = `
-          <h5 style="font-size: var(--font-size-sm); color: var(--primary-500); margin-bottom: 0.25rem;">${item.title}</h5>
-          <p style="margin: 0; font-size: var(--font-size-xs); color: var(--text-tertiary);">${item.info}</p>
-        `;
-        researchPanel.appendChild(itemEl);
-      }, index * 2500);
-    });
+
+    for (let i = 0; i < topics.length; i++) {
+      setTimeout(async () => {
+        try {
+          const response = await api.researchTopic(topics[i]);
+          const research = response.data;
+
+          const itemEl = document.createElement('div');
+          itemEl.className = 'fade-in';
+          itemEl.style.marginBottom = '1rem';
+          itemEl.innerHTML = `
+            <h5 style="font-size: var(--font-size-sm); color: var(--primary-500); margin-bottom: 0.25rem;">${research.title}</h5>
+            <p style="margin: 0; font-size: var(--font-size-xs); color: var(--text-tertiary);">${research.info}</p>
+          `;
+          researchPanel.appendChild(itemEl);
+        } catch (error) {
+          console.error('Research failed:', error);
+          // Fallback
+          const fallbackItems = [
+            { title: 'Market Trends', info: 'AI assistant market projected to grow 35% YoY' },
+            { title: 'Competitor Analysis', info: 'Top 3 competitors: AssistAI, SmartHelper, AICompanion' },
+            { title: 'Industry Insights', info: 'Real-time analysis features are becoming standard' }
+          ];
+          const item = fallbackItems[i];
+          const itemEl = document.createElement('div');
+          itemEl.className = 'fade-in';
+          itemEl.style.marginBottom = '1rem';
+          itemEl.innerHTML = `
+            <h5 style="font-size: var(--font-size-sm); color: var(--primary-500); margin-bottom: 0.25rem;">${item.title}</h5>
+            <p style="margin: 0; font-size: var(--font-size-xs); color: var(--text-tertiary);">${item.info}</p>
+          `;
+          researchPanel.appendChild(itemEl);
+        }
+      }, i * 2500);
+    }
   },
 
   // Business Tools
@@ -347,11 +463,34 @@ const app = {
     // In a real app, this would open a contact management interface
   },
 
-  analyzePitch() {
-    this.showNotification('🦈 Starting Shark Tank analysis...', 'info');
-    setTimeout(() => {
-      this.showNotification('✓ Pitch analysis complete! Check the results.', 'success');
-    }, 2000);
+  async analyzePitch() {
+    this.showNotification('🦈 Starting AI Shark Tank analysis...', 'info');
+
+    try {
+      const pitch = 'AI-powered personal assistant for analyzing live interactions and meetings with real-time insights';
+      const response = await api.analyzePitch(pitch);
+      const analysis = response.data;
+
+      // Update the UI with analysis results
+      const analysisContainer = document.querySelector('#business-page .glass-card:last-child > div');
+      if (analysisContainer) {
+        analysisContainer.innerHTML = `
+          <h4 style="font-size: var(--font-size-base); margin-bottom: 0.5rem;">Latest AI Analysis</h4>
+          <p style="font-size: var(--font-size-sm); color: var(--text-tertiary);">
+            <strong>Strengths:</strong> ${analysis.strengths.join(', ')}<br>
+            <strong>Concerns:</strong> ${analysis.concerns.join(', ')}<br>
+            <strong>Recommendation:</strong> ${analysis.recommendations.join(', ')}<br>
+            <strong>Investment Potential:</strong> ${analysis.investmentPotential.toUpperCase()}<br>
+            <strong>Summary:</strong> ${analysis.summary}
+          </p>
+        `;
+      }
+
+      this.showNotification('✓ AI pitch analysis complete!', 'success');
+    } catch (error) {
+      console.error('Pitch analysis failed:', error);
+      this.showNotification('⚠️ Analysis failed. Using fallback mode.', 'error');
+    }
   },
 
   // Utility Functions
@@ -378,7 +517,7 @@ const app = {
     document.addEventListener('keydown', (e) => {
       // Keyboard shortcuts
       if (e.ctrlKey || e.metaKey) {
-        switch(e.key) {
+        switch (e.key) {
           case '1':
             e.preventDefault();
             this.navigateTo('dashboard');
