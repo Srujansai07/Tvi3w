@@ -5,10 +5,10 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import bodyParser from 'body-parser';
 import session from 'express-session';
-import passport from '../config/passport.js';
+import passport from './config/passport.js';
 import { sequelize } from './models/index.js';
 import { createServer } from 'http';
-import { initSocket } from '../services/socket.js';
+import { initSocket } from './services/socket.js';
 
 // Import Routes
 import analysisRoutes from './routes/analysis.js';
