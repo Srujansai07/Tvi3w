@@ -9,6 +9,10 @@ import passport from './config/passport.js';
 import { sequelize } from './models/index.js';
 import { createServer } from 'http';
 import { initSocket } from './services/socket.js';
+import dns from 'dns';
+
+// Force IPv4 for Supabase connection
+dns.setDefaultResultOrder('ipv4first');
 
 // Import Routes
 import analysisRoutes from './routes/analysis.js';
