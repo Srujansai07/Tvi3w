@@ -1,5 +1,9 @@
 import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
+import dns from 'dns';
+
+// Force IPv4 for Supabase connection (fix for ENETUNREACH on Railway)
+dns.setDefaultResultOrder('ipv4first');
 
 dotenv.config();
 
