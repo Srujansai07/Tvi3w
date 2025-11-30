@@ -1,24 +1,23 @@
 import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
-import dns from 'dns';
-
-// Force IPv4 for Supabase connection (fix for ENETUNREACH on Railway)
-dns.setDefaultResultOrder('ipv4first');
 
 dotenv.config();
 
-// Supabase connection string format: postgresql://postgres:[password]@db.[project-ref].supabase.co:5432/postgres
+// Supabase Connection Pooler (IPv4 compatible)
+// Host: aws-0-ap-south-1.pooler.supabase.com (Mumbai)
+// User: postgres.[project-ref]
+// Port: 5432 (Session Mode)
 const sequelize = new Sequelize(
-  process.env.DATABASE_URL || 'postgresql://postgres:231100813aiiTgn@db.ptkoregmemknufnpnnfc.supabase.co:5432/postgres',
+  process.env.DATABASE_URL || 'postgres://postgres.ptkoregmemknufnpnnfc:231100813aiiTgn@aws-0-ap-south-1.pooler.supabase.com:5432/postgres',
   {
     dialect: 'postgres',
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false // Required for Supabase
+        rejectUnauthorized: false
       }
     },
-    logging: false, // Set to console.log to see SQL queries
+    logging: false,
     pool: {
       max: 5,
       min: 0,
