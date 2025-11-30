@@ -349,6 +349,202 @@
             <strong>Strengths:</strong> Clear value proposition, strong market research<br>
             <strong>Concerns:</strong> Scalability questions, competitive landscape<br>
             <strong>Recommendation:</strong> Focus on MVP and early adopters
+            ```html
+            Select a platform or paste content to begin analysis...
+          </p>
+        </div>
+
+        <div class="mt-2">
+          <h4>Sentiment Analysis</h4>
+          <div class="sentiment-meter">
+            <div class="sentiment-fill" id="sentiment-bar" style="width: 0%"></div>
+          </div>
+          <p id="sentiment-text" style="color: var(--text-tertiary); font-size: var(--font-size-sm);">No analysis yet
+          </p>
+        </div>
+      </div>
+
+      <div class="insights-panel">
+        <div class="glass-card">
+          <h4>AI Insights</h4>
+          <div id="insights-container">
+            <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">
+              Insights will appear here after analysis...
+            </p>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <h4>Quick Actions</h4>
+          <button class="btn btn-secondary" style="width: 100%; margin-bottom: 0.5rem;" onclick="app.saveInsight()">
+            💾 Save Insight
+          </button>
+          <button class="btn btn-outline" style="width: 100%;" onclick="app.shareInsight()">
+            📤 Share
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Meetings Page -->
+  <section id="meetings-page" class="page hidden">
+    <div class="hero">
+      <h1>Meeting Companion</h1>
+      <p class="hero-subtitle">Dynamic questions, real-time notes, and passive research</p>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <button class="btn btn-primary" id="meeting-toggle" onclick="app.toggleMeeting()">
+        <span>▶️</span>
+        Start Meeting
+      </button>
+    </div>
+
+    <div class="meeting-layout">
+      <div>
+        <div class="glass-card" style="margin-bottom: 1.5rem;">
+          <h3>Live Transcript</h3>
+          <div class="transcript-area" id="transcript">
+            <p style="color: var(--text-tertiary); text-align: center;">
+              Start a meeting to begin transcription...
+            </p>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <h3>Smart Notes</h3>
+          <div id="smart-notes" style="min-height: 150px;">
+            <p style="color: var(--text-tertiary);">Key points will be captured automatically...</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-panel">
+        <div class="glass-card">
+          <h4>Dynamic Questions</h4>
+          <div id="question-bubbles" style="min-height: 200px;">
+            <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">
+              Questions will appear as the conversation flows...
+            </p>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <h4>Passive Research</h4>
+          <div id="research-panel" style="min-height: 200px;">
+            <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">
+              Background information will be retrieved automatically...
+            </p>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <h4>Meeting Stats</h4>
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div>
+              <small style="color: var(--text-tertiary);">Duration</small>
+              <div style="font-size: var(--font-size-xl); font-weight: 600;" id="meeting-duration">00:00</div>
+            </div>
+            <div>
+              <small style="color: var(--text-tertiary);">Questions Generated</small>
+              <div style="font-size: var(--font-size-xl); font-weight: 600;" id="questions-count">0</div>
+            </div>
+            <div>
+              <small style="color: var(--text-tertiary);">Key Points</small>
+              <div style="font-size: var(--font-size-xl); font-weight: 600;" id="notes-count">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Business Page -->
+  <section id="business-page" class="page hidden">
+    <div class="hero">
+      <h1>Business Tools</h1>
+      <p class="hero-subtitle">Manage contracts, venues, and professional connections</p>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="glass-card">
+        <h3>📋 Contract Manager</h3>
+        <p style="margin-bottom: 1.5rem;">Track agreements, signings, and important documents</p>
+
+        <div id="contracts-list">
+          <div class="transcript-message">
+            <div class="speaker">Partnership Agreement - TechCorp</div>
+            <p>Status: Pending Signature</p>
+            <span class="status-badge pending">Pending</span>
+          </div>
+          <div class="transcript-message">
+            <div class="speaker">NDA - Innovation Labs</div>
+            <p>Status: Signed & Active</p>
+            <span class="status-badge active">Active</span>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="app.addContract()">
+          ➕ Add Contract
+        </button>
+      </div>
+
+      <div class="glass-card">
+        <h3>📍 Venue & Scheduling</h3>
+        <p style="margin-bottom: 1.5rem;">Manage meeting locations and invitations</p>
+
+        <div id="venues-list">
+          <div class="transcript-message">
+            <div class="speaker">Q4 Strategy Meeting</div>
+            <p>📍 Conference Room A, Downtown Office</p>
+            <small style="color: var(--text-tertiary);">Dec 15, 2025 - 2:00 PM</small>
+          </div>
+          <div class="transcript-message">
+            <div class="speaker">Client Presentation</div>
+            <p>📍 Virtual - Zoom Link</p>
+            <small style="color: var(--text-tertiary);">Dec 20, 2025 - 10:00 AM</small>
+          </div>
+        </div>
+
+        <button class="btn btn-secondary" style="width: 100%; margin-top: 1rem;" onclick="app.scheduleVenue()">
+          📅 Schedule Venue
+        </button>
+      </div>
+
+      <div class="glass-card">
+        <h3>👥 Contact Hub</h3>
+        <p style="margin-bottom: 1.5rem;">Professional network and fellowship management</p>
+
+        <div id="contacts-list">
+          <div class="transcript-message">
+            <div class="speaker">Sarah Johnson - CEO, StartupX</div>
+            <p>Last interaction: LinkedIn message about collaboration</p>
+            <small style="color: var(--text-tertiary);">2 days ago</small>
+          </div>
+          <div class="transcript-message">
+            <div class="speaker">Michael Chen - Investor</div>
+            <p>Last interaction: Coffee meeting notes</p>
+            <small style="color: var(--text-tertiary);">1 week ago</small>
+          </div>
+        </div>
+
+        <button class="btn btn-outline" style="width: 100%; margin-top: 1rem;" onclick="app.addContact()">
+          ➕ Add Contact
+        </button>
+      </div>
+
+      <div class="glass-card">
+        <h3>🦈 Shark Tank Analysis</h3>
+        <p style="margin-bottom: 1.5rem;">Pitch analysis and implementation roadmap</p>
+
+        <div
+          style="padding: 1rem; background: var(--surface-glass); border-radius: var(--border-radius-md); margin-bottom: 1rem;">
+          <h4 style="font-size: var(--font-size-base); margin-bottom: 0.5rem;">Latest Analysis</h4>
+          <p style="font-size: var(--font-size-sm); color: var(--text-tertiary);">
+            <strong>Strengths:</strong> Clear value proposition, strong market research<br>
+            <strong>Concerns:</strong> Scalability questions, competitive landscape<br>
+            <strong>Recommendation:</strong> Focus on MVP and early adopters
           </p>
         </div>
 
@@ -361,7 +557,11 @@
 </main>
 
 <!-- JavaScript -->
+<link rel="stylesheet" href="styles.css">
+<script src="https://tvi3w-production.up.railway.app/socket.io/socket.io.js"></script>
+<script src="api-client.js"></script>
 <script src="app.js"></script>
 </body>
 
 </html>
+```
