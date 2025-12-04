@@ -4,8 +4,8 @@ export default function HomePage() {
             <div className="container mx-auto px-4 py-16">
                 {/* Hero Section */}
                 <div className="text-center mb-16">
-                    <h1 className="text-6xl font-bold text-white mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-                        Tvi3W
+                    <h1 className="text-6xl font-bold mb-4 bg-yellow-400 text-black px-8 py-4 rounded-2xl inline-block">
+                        Tvi3W 🟡
                     </h1>
                     <p className="text-xl text-gray-300 mb-8">
                         Your AI-Powered Personal Assistant
