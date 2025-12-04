@@ -24,7 +24,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 ### For Vercel Production
 ```env
 # Same as above, but change:
-NEXT_PUBLIC_APP_URL=https://tvi3w.vercel.app
+NEXT_PUBLIC_APP_URL=https://tvi3w-ai.vercel.app
 ```
 
 ---

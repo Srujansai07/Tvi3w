@@ -25,22 +25,6 @@ export default function Navigation() {
 
                     {/* Navigation Links */}
                     <div className="hidden md:flex items-center space-x-1">
-                        {links.map((link) => {
-                            const isActive = pathname === link.href
-                            return (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    className={`px-4 py-2 rounded-lg transition-all ${isActive
-                                            ? 'bg-blue-600 text-white'
-                                            : 'text-gray-300 hover:bg-white/10'
-                                        }`}
-                                >
-                                    <span className="mr-2">{link.icon}</span>
-                                    {link.label}
-                                </Link>
-                            )
-                        })}
                     </div>
 
                     {/* Auth Button */}
@@ -59,8 +43,8 @@ export default function Navigation() {
                                     key={link.href}
                                     href={link.href}
                                     className={`px-3 py-1.5 rounded-lg text-sm transition-all ${isActive
-                                            ? 'bg-blue-600 text-white'
-                                            : 'text-gray-300 hover:bg-white/10'
+                                        ? 'bg-blue-600 text-white'
+                                        : 'text-gray-300 hover:bg-white/10'
                                         }`}
                                 >
                                     <span className="mr-1">{link.icon}</span>

@@ -17,8 +17,8 @@ export default function Button({
     const baseStyles = 'font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed'
 
     const variants = {
-        primary: 'bg-blue-600 hover:bg-blue-700 text-white',
-        secondary: 'glass text-white hover:bg-white/20',
+        primary: 'bg-primary hover:bg-primary/90 text-primary-foreground',
+        secondary: 'glass text-foreground hover:bg-white/20',
         gradient: 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white',
     }
 

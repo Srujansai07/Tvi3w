@@ -1,7 +1,7 @@
 # Vercel Deployment Configuration
 
 ## ✅ Your Vercel Project
-- **URL**: https://tvi3w.vercel.app
+- **URL**: https://tvi3w-ai.vercel.app
 - **Project ID**: prj_BH0CG3FkTGXBcsTFoGTj0WUV9Q5X
 
 ---
@@ -40,7 +40,7 @@ DATABASE_URL=postgresql://postgres:231100813aiiTgn@db.ptkoregmemknufnpnnfc.supab
 
 GEMINI_API_KEY=AIzaSyDzH-UHaBU3glILoOr9moaR8aGeg88tWv8
 
-NEXT_PUBLIC_APP_URL=https://tvi3w.vercel.app
+NEXT_PUBLIC_APP_URL=https://tvi3w-ai.vercel.app
 ```
 
 **Important**: Apply these to **Production**, **Preview**, and **Development** environments.

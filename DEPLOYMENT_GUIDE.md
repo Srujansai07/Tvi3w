@@ -32,11 +32,11 @@ Add these in Vercel dashboard:
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 GEMINI_API_KEY=your_gemini_api_key
-NEXT_PUBLIC_APP_URL=https://your-domain.vercel.app
+NEXT_PUBLIC_APP_URL=https://tvi3w-ai.vercel.app
 ```
 
 4. **Done!**
-Your app will be live at `https://your-project.vercel.app`
+Your app will be live at `https://tvi3w-ai.vercel.app`
 
 ## Alternative: Railway
 
