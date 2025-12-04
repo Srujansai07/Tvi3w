@@ -1,103 +1,186 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 
 export default function BusinessPage() {
     const [pitch, setPitch] = useState('')
-    const [analysis, setAnalysis] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
+    const [result, setResult] = useState<any>(null)
+    const [error, setError] = useState<string | null>(null)
 
-    const handleAnalyze = async () => {
-        if (!pitch.trim()) return
+    const handleAnalyze = async () {
+        if (!pitch.trim()) {
+            setError('Please enter a business pitch')
+            return
+        }
 
         setLoading(true)
+        setError(null)
+        setResult(null)
+
         try {
-            const response = await fetch('/api/business/analyze', {
+            const response = await fetch('/api/business/analyze-pitch', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ pitch }),
             })
 
-            const data = await response.json()
-            if (data.success) {
-                setAnalysis(data.analysis)
+            if (!response.ok) {
+                throw new Error('Failed to analyze pitch')
             }
-        } catch (error) {
-            console.error('Pitch analysis failed:', error)
+
+            const data = await response.json()
+            setResult(data)
+        } catch (err: any) {
+            setError(err.message || 'An error occurred')
         } finally {
             setLoading(false)
         }
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-            <div className="container mx-auto px-4 py-8">
-                <header className="mb-12">
-                    <h1 className="text-4xl font-bold text-white mb-2">Business Pitch Analysis</h1>
-                    <p className="text-gray-400">Get Shark Tank-style investor feedback</p>
-                </header>
+        <div className="min-h-screen bg-gray-900">
+            {/* Header */}
+            <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm sticky top-0 z-10">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <Link href="/dashboard" className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                                Tvi3W
+                            </Link>
+                            <p className="text-sm text-gray-400 mt-1">Business Pitch Analysis</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Input Section */}
-                    <div className="glass rounded-xl p-8">
-                        <h2 className="text-2xl font-bold text-white mb-4">Your Pitch</h2>
+            {/* Main Content */}
+            <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div className="glass-panel p-8 rounded-xl border border-gray-800">
+                    <div className="flex items-center gap-3 mb-6">
+                        <span className="text-4xl">🦈</span>
+                        <div>
+                            <h2 className="text-2xl font-bold text-white">Shark Tank Analysis</h2>
+                            <p className="text-sm text-gray-400">Get investor-style feedback on your pitch</p>
+                        </div>
+                    </div>
+
+                    {/* Pitch Input */}
+                    <div className="mb-6">
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Your Business Pitch
+                        </label>
                         <textarea
                             value={pitch}
                             onChange={(e) => setPitch(e.target.value)}
-                            placeholder="Describe your business idea, product, market, and why it will succeed..."
-                            className="w-full h-96 bg-slate-800/50 text-white rounded-lg p-4 border border-gray-700 focus:border-blue-500 focus:outline-none resize-none"
+                            placeholder="Describe your business idea, problem you're solving, target market, business model, and traction..."
+                            className="w-full h-64 px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 resize-none"
                         />
-                        <button
-                            onClick={handleAnalyze}
-                            disabled={loading || !pitch.trim()}
-                            className="mt-4 w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-600 text-white rounded-lg font-semibold transition-all"
-                        >
-                            {loading ? 'Analyzing Pitch...' : 'Get Investor Feedback'}
-                        </button>
                     </div>
 
-                    {/* Results Section */}
-                    <div className="glass rounded-xl p-8">
-                        <h2 className="text-2xl font-bold text-white mb-4">Investor Analysis</h2>
-                        {analysis ? (
-                            <div className="bg-slate-800/50 rounded-lg p-6 h-96 overflow-y-auto">
-                                <pre className="text-gray-300 whitespace-pre-wrap font-sans">{analysis}</pre>
-                            </div>
-                        ) : (
-                            <div className="flex items-center justify-center h-96 text-gray-500">
-                                Investor feedback will appear here
-                            </div>
-                        )}
-                    </div>
-                </div>
+                    {/* Analyze Button */}
+                    <button
+                        onClick={handleAnalyze}
+                        disabled={loading || !pitch.trim()}
+                        className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+                    >
+                        {loading ? 'Analyzing Pitch...' : 'Get Shark Tank Feedback'}
+                    </button>
 
-                {/* Analysis Criteria */}
-                <div className="mt-12 glass rounded-xl p-8">
-                    <h2 className="text-2xl font-bold text-white mb-6">What We Analyze</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        <div>
-                            <div className="text-3xl mb-3">💪</div>
-                            <h3 className="text-lg font-bold text-white mb-2">Strengths</h3>
-                            <p className="text-sm text-gray-400">What makes your idea compelling</p>
+                    {/* Error Display */}
+                    {error && (
+                        <div className="mt-6 p-4 bg-red-500/10 border border-red-500/50 rounded-lg">
+                            <p className="text-red-400 text-sm">{error}</p>
                         </div>
-                        <div>
-                            <div className="text-3xl mb-3">⚠️</div>
-                            <h3 className="text-lg font-bold text-white mb-2">Concerns</h3>
-                            <p className="text-sm text-gray-400">Potential risks and weaknesses</p>
+                    )}
+
+                    {/* Results Display */}
+                    {result && (
+                        <div className="mt-8 space-y-6">
+                            {/* Investment Recommendation */}
+                            <div className={`p-6 rounded-lg border-2 ${result.investmentRecommendation === 'yes' ? 'bg-green-500/10 border-green-500' :
+                                    result.investmentRecommendation === 'no' ? 'bg-red-500/10 border-red-500' :
+                                        'bg-yellow-500/10 border-yellow-500'
+                                }`}>
+                                <h3 className="text-xl font-bold text-white mb-2">Investment Decision</h3>
+                                <p className={`text-2xl font-bold ${result.investmentRecommendation === 'yes' ? 'text-green-400' :
+                                        result.investmentRecommendation === 'no' ? 'text-red-400' :
+                                            'text-yellow-400'
+                                    }`}>
+                                    {result.investmentRecommendation.toUpperCase()}
+                                </p>
+                            </div>
+
+                            {/* Strengths */}
+                            <div>
+                                <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                                    <span className="text-green-400">✓</span> Strengths
+                                </h3>
+                                <ul className="space-y-2">
+                                    {result.strengths.map((strength: string, index: number) => (
+                                        <li key={index} className="flex items-start gap-2 text-gray-300 bg-green-500/5 p-3 rounded-lg">
+                                            <span className="text-green-400 mt-1">+</span>
+                                            <span>{strength}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* Weaknesses */}
+                            <div>
+                                <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                                    <span className="text-red-400">✗</span> Weaknesses
+                                </h3>
+                                <ul className="space-y-2">
+                                    {result.weaknesses.map((weakness: string, index: number) => (
+                                        <li key={index} className="flex items-start gap-2 text-gray-300 bg-red-500/5 p-3 rounded-lg">
+                                            <span className="text-red-400 mt-1">-</span>
+                                            <span>{weakness}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* Market Viability */}
+                            <div>
+                                <h3 className="text-lg font-semibold text-white mb-2">Market Viability</h3>
+                                <p className="text-gray-300 bg-gray-800/50 p-4 rounded-lg">{result.marketViability}</p>
+                            </div>
+
+                            {/* Implementation Roadmap */}
+                            <div>
+                                <h3 className="text-lg font-semibold text-white mb-3">Implementation Roadmap</h3>
+                                <ol className="space-y-2">
+                                    {result.implementationRoadmap.map((step: string, index: number) => (
+                                        <li key={index} className="flex items-start gap-3 text-gray-300">
+                                            <span className="flex-shrink-0 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-xs font-bold">
+                                                {index + 1}
+                                            </span>
+                                            <span className="pt-0.5">{step}</span>
+                                        </li>
+                                    ))}
+                                </ol>
+                            </div>
+
+                            {/* Risks */}
+                            <div>
+                                <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                                    <span className="text-yellow-400">⚠</span> Key Risks
+                                </h3>
+                                <ul className="space-y-2">
+                                    {result.risks.map((risk: string, index: number) => (
+                                        <li key={index} className="flex items-start gap-2 text-gray-300 bg-yellow-500/5 p-3 rounded-lg">
+                                            <span className="text-yellow-400 mt-1">!</span>
+                                            <span>{risk}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
                         </div>
-                        <div>
-                            <div className="text-3xl mb-3">📈</div>
-                            <h3 className="text-lg font-bold text-white mb-2">Market Potential</h3>
-                            <p className="text-sm text-gray-400">Scalability and opportunity</p>
-                        </div>
-                        <div>
-                            <div className="text-3xl mb-3">💰</div>
-                            <h3 className="text-lg font-bold text-white mb-2">Investment</h3>
-                            <p className="text-sm text-gray-400">Recommendation and reasoning</p>
-                        </div>
-                    </div>
+                    )}
                 </div>
-            </div>
+            </main>
         </div>
     )
 }
