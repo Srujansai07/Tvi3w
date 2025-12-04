@@ -2,7 +2,7 @@
 
 ## Project Details
 - **Project ID**: rnmsrpqwligboxggnktq
-- **Project URL**: https://rnmsrpqwligboxggnktq.supabase.co
+- **Project URL**: https://ptkoregmemknufnpnnfc.supabase.co
 - **Database URL**: postgresql://postgres:[YOUR_PASSWORD]@db.rnmsrpqwligboxggnktq.supabase.co:5432/postgres
 
 ## Environment Variables Required
@@ -10,7 +10,7 @@
 ### For Local Development (.env.local)
 ```bash
 # Supabase
-NEXT_PUBLIC_SUPABASE_URL=https://rnmsrpqwligboxggnktq.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://ptkoregmemknufnpnnfc.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=[YOUR_ANON_KEY]
 SUPABASE_SERVICE_ROLE_KEY=[YOUR_SERVICE_ROLE_KEY]
 
