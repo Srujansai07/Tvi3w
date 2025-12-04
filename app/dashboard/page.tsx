@@ -1,3 +1,5 @@
+import Card from '@/components/Card'
+
 export default function DashboardPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -5,7 +7,7 @@ export default function DashboardPage() {
                 {/* Header */}
                 <header className="mb-12">
                     <h1 className="text-4xl font-bold text-white mb-2">Dashboard</h1>
-                    <p className="text-gray-400">Welcome back! Here's your overview</p>
+                    <p className="text-gray-400">Welcome back! Here&apos;s your overview</p>
                 </header>
 
                 {/* Quick Stats */}
@@ -49,12 +51,28 @@ export default function DashboardPage() {
                     <a href="/business" className="glass rounded-xl p-8 hover:scale-105 transition-transform cursor-pointer">
                         <div className="text-4xl mb-4">💼</div>
                         <h3 className="text-xl font-bold text-white mb-2">Pitch Analysis</h3>
+                        <p className="text-gray-400 text-sm">Get Shark Tank-style feedback</p>
+                    </a>
+                </div>
+
+                {/* Recent Activity */}
+                <div className="mt-12 glass rounded-xl p-8">
+                    <h2 className="text-2xl font-bold text-white mb-6">Recent Activity</h2>
+                    <div className="space-y-4">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="flex items-center justify-between border-b border-gray-700 pb-4">
+                                <div>
+                                    <div className="text-white font-medium">Analysis #{i}</div>
+                                    <div className="text-sm text-gray-400">2 hours ago</div>
+                                </div>
+                                <div className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm">
+                                    Completed
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
-                        ))}
         </div>
-                </div >
-            </div >
-        </div >
     )
 }
