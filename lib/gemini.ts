@@ -1,9 +1,23 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
+// Validate API key is present
+const apiKey = process.env.GEMINI_API_KEY
+if (!apiKey) {
+    console.error('CRITICAL: GEMINI_API_KEY environment variable is not set!')
+}
+
+const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null
 
 export async function analyzeContent(content: string) {
     try {
+        if (!genAI) {
+            console.error('Gemini API not initialized - API key missing')
+            return {
+                success: false,
+                error: 'API configuration error - please contact support',
+            }
+        }
+
         const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
 
         const prompt = `Analyze the following content and provide:
@@ -25,15 +39,24 @@ Content: ${content}`
         }
     } catch (error) {
         console.error('Gemini API Error:', error)
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
         return {
             success: false,
-            error: 'Failed to analyze content',
+            error: `Failed to analyze content: ${errorMessage}`,
         }
     }
 }
 
 export async function generateMeetingQuestions(topic: string, context?: string) {
     try {
+        if (!genAI) {
+            console.error('Gemini API not initialized - API key missing')
+            return {
+                success: false,
+                error: 'API configuration error - please contact support',
+            }
+        }
+
         const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
 
         const prompt = `Generate 5 insightful questions for a meeting about: ${topic}
@@ -51,15 +74,24 @@ Make the questions specific, actionable, and designed to drive productive discus
         }
     } catch (error) {
         console.error('Gemini API Error:', error)
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
         return {
             success: false,
-            error: 'Failed to generate questions',
+            error: `Failed to generate questions: ${errorMessage}`,
         }
     }
 }
 
 export async function analyzeBusinessPitch(pitch: string) {
     try {
+        if (!genAI) {
+            console.error('Gemini API not initialized - API key missing')
+            return {
+                success: false,
+                error: 'API configuration error - please contact support',
+            }
+        }
+
         const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
 
         const prompt = `You are a Shark Tank investor. Analyze this business pitch and provide:
@@ -80,9 +112,10 @@ Pitch: ${pitch}`
         }
     } catch (error) {
         console.error('Gemini API Error:', error)
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
         return {
             success: false,
-            error: 'Failed to analyze pitch',
+            error: `Failed to analyze pitch: ${errorMessage}`,
         }
     }
 }

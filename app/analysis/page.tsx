@@ -6,11 +6,13 @@ export default function AnalysisPage() {
     const [content, setContent] = useState('')
     const [analysis, setAnalysis] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
 
     const handleAnalyze = async () => {
         if (!content.trim()) return
 
         setLoading(true)
+        setError(null)
         try {
             const response = await fetch('/api/analysis', {
                 method: 'POST',
@@ -21,9 +23,12 @@ export default function AnalysisPage() {
             const data = await response.json()
             if (data.success) {
                 setAnalysis(data.analysis)
+            } else {
+                setError(data.error || 'Analysis failed')
             }
         } catch (error) {
             console.error('Analysis failed:', error)
+            setError('Network error - please try again')
         } finally {
             setLoading(false)
         }
@@ -59,7 +64,12 @@ export default function AnalysisPage() {
                     {/* Results Section */}
                     <div className="glass rounded-xl p-8">
                         <h2 className="text-2xl font-bold text-white mb-4">AI Analysis</h2>
-                        {analysis ? (
+                        {error ? (
+                            <div className="bg-red-500/20 border border-red-500 rounded-lg p-6 h-64 overflow-y-auto">
+                                <p className="text-red-400 font-semibold mb-2">❌ Error</p>
+                                <p className="text-red-300">{error}</p>
+                            </div>
+                        ) : analysis ? (
                             <div className="bg-slate-800/50 rounded-lg p-6 h-64 overflow-y-auto">
                                 <pre className="text-gray-300 whitespace-pre-wrap font-sans">{analysis}</pre>
                             </div>
