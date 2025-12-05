@@ -11,12 +11,18 @@ export default function HomePage() {
                         Your AI-Powered Personal Assistant
                     </p>
                     <div className="flex gap-4 justify-center">
-                        <button className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-all transform hover:scale-105">
+                        <a
+                            href="/dashboard"
+                            className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-all transform hover:scale-105"
+                        >
                             Get Started
-                        </button>
-                        <button className="px-8 py-3 glass text-white rounded-lg font-semibold transition-all transform hover:scale-105">
-                            Learn More
-                        </button>
+                        </a>
+                        <a
+                            href="/analysis"
+                            className="px-8 py-3 glass text-white rounded-lg font-semibold transition-all transform hover:scale-105"
+                        >
+                            Try Analysis
+                        </a>
                     </div>
                 </div>
 
