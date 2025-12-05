@@ -9,7 +9,7 @@ export default function BusinessPage() {
     const [result, setResult] = useState<any>(null)
     const [error, setError] = useState<string | null>(null)
 
-    const handleAnalyze = async () {
+    const handleAnalyze = async () => {
         if (!pitch.trim()) {
             setError('Please enter a business pitch')
             return
@@ -100,13 +100,13 @@ export default function BusinessPage() {
                         <div className="mt-8 space-y-6">
                             {/* Investment Recommendation */}
                             <div className={`p-6 rounded-lg border-2 ${result.investmentRecommendation === 'yes' ? 'bg-green-500/10 border-green-500' :
-                                    result.investmentRecommendation === 'no' ? 'bg-red-500/10 border-red-500' :
-                                        'bg-yellow-500/10 border-yellow-500'
+                                result.investmentRecommendation === 'no' ? 'bg-red-500/10 border-red-500' :
+                                    'bg-yellow-500/10 border-yellow-500'
                                 }`}>
                                 <h3 className="text-xl font-bold text-white mb-2">Investment Decision</h3>
                                 <p className={`text-2xl font-bold ${result.investmentRecommendation === 'yes' ? 'text-green-400' :
-                                        result.investmentRecommendation === 'no' ? 'text-red-400' :
-                                            'text-yellow-400'
+                                    result.investmentRecommendation === 'no' ? 'text-red-400' :
+                                        'text-yellow-400'
                                     }`}>
                                     {result.investmentRecommendation.toUpperCase()}
                                 </p>
