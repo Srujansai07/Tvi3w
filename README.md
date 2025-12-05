@@ -1,176 +1,147 @@
-# Tvi3W Next - Modern Gold Standard Stack
+# Tvi3W - AI-Powered Meeting Assistant
 
-> **🚀 Built with Next.js 14, TypeScript, Supabase, and Gemini AI**
+Transform your meetings into actionable insights with AI-powered transcription, question generation, and business intelligence.
 
-## 🏆 The Stack
+## 🚀 Features
 
-| Technology | Purpose |
-|------------|---------|
-| **Next.js 14** | React framework with App Router |
-| **TypeScript** | Type-safe development |
-| **Supabase** | PostgreSQL database + Authentication |
-| **Tailwind CSS** | Utility-first styling |
-| **Gemini AI** | AI-powered analysis and insights |
-| **Zustand** | Client state management |
+- **Real-Time Meeting Companion**: Live transcription and AI-generated questions
+- **Content Intelligence**: Analyze LinkedIn, Twitter, and article content
+- **Business Intelligence**: Shark Tank-style pitch analysis
+- **Contact Management**: Track relationships and interactions
+- **Insights & Analytics**: AI-powered patterns and recommendations
 
-## 📦 Installation
+## 🛠️ Tech Stack
+
+- **Frontend**: Next.js 14, React 18, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes, Supabase
+- **AI**: Google Gemini AI
+- **Auth**: NextAuth.js (Google & GitHub OAuth)
+- **Database**: PostgreSQL (Supabase)
+- **Deployment**: Vercel
+
+## 📦 Getting Started
 
 ### Prerequisites
-- Node.js 18+ and npm
-- Supabase account ([supabase.com](https://supabase.com))
-- Google Gemini API key ([makersuite.google.com](https://makersuite.google.com/app/apikey))
 
-### Setup Steps
+- Node.js 18+ 
+- Supabase account
+- Google Gemini API key
 
-1. **Install Dependencies**
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/Srujansai07/Tvi3w.git
+cd Tvi3w
+```
+
+2. Install dependencies:
 ```bash
 npm install
 ```
 
-2. **Configure Environment Variables**
+3. Set up environment variables:
 ```bash
 cp .env.local.example .env.local
 ```
 
 Edit `.env.local` with your credentials:
 ```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# Gemini AI
 GEMINI_API_KEY=your_gemini_api_key
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# NextAuth
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_secret_here
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GITHUB_ID=your_github_id
+GITHUB_SECRET=your_github_secret
 ```
 
-3. **Run Development Server**
+4. Run database migrations:
+- Go to your Supabase SQL Editor
+- Run the SQL from `supabase/migrations/001_initial_schema.sql`
+
+5. Start the development server:
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+6. Open [http://localhost:3000](http://localhost:3000)
 
-## 🎯 Features
+## 📚 Documentation
 
-### 📊 Content Analysis
-- AI-powered content analysis
-- Sentiment detection
-- Key insights extraction
+- [Setup Guide](./SETUP.md)
+- [Supabase Configuration](./SUPABASE_SETUP.md)
+- [Environment Variables](./ENV_VARIABLES.md)
+- [Deployment Guide](./DEPLOYMENT_GUIDE.md)
+
+## 🎯 Key Features
+
+### Meeting Management
+- Create and manage meetings
+- AI-powered transcription
+- Real-time question suggestions
+- Automatic summarization
+
+### Content Analysis
+- LinkedIn post analysis
+- Twitter content insights
+- Article summarization
 - Actionable recommendations
 
-### 🎯 Meeting Companion
-- Dynamic question generation
-- Context-aware suggestions
-- Real-time note taking
-- Meeting summaries
+### Business Intelligence
+- Pitch analysis (Shark Tank style)
+- Market viability assessment
+- Implementation roadmaps
+- Risk analysis
 
-### 💼 Business Pitch Analysis
-- Shark Tank-style investor feedback
-- Strengths and weaknesses analysis
-- Market potential scoring
-- Investment recommendations
+### Contact Management
+- Relationship tracking
+- Interaction history
+- Follow-up reminders
+- Network insights
 
-## 📁 Project Structure
+## 🔒 Security
 
-```
-Tvi3w-Next/
-├── app/
-│   ├── api/              # API routes
-│   │   ├── analysis/
-│   │   ├── meetings/
-│   │   └── business/
-│   ├── dashboard/        # Dashboard page
-│   ├── analysis/         # Analysis module
-│   ├── meetings/         # Meetings module
-│   ├── business/         # Business module
-│   ├── layout.tsx        # Root layout
-│   ├── page.tsx          # Landing page
-│   └── globals.css       # Global styles
-├── lib/
-│   ├── supabase/         # Supabase clients
-│   │   ├── server.ts
-│   │   └── client.ts
-│   └── gemini.ts         # Gemini AI service
-├── package.json
-├── tsconfig.json
-├── tailwind.config.ts
-└── next.config.js
-```
+- OAuth authentication (Google & GitHub)
+- Row Level Security (RLS) in Supabase
+- Encrypted data at rest and in transit
+- GDPR compliant
 
-## 🚀 Deployment
+## 📈 Performance
 
-### Vercel (Recommended)
-1. Push code to GitHub
-2. Import project in Vercel
-3. Add environment variables
-4. Deploy
-
-### Environment Variables for Production
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `GEMINI_API_KEY`
-- `NEXT_PUBLIC_APP_URL` (your production URL)
-
-## 🔐 Authentication
-
-Currently using **Supabase Auth** for rapid development.
-
-**Migration Path**: Switch to NextAuth.js before investor pitch for:
-- More provider options
-- Custom authentication flows
-- Better enterprise support
-
-## 🎨 Design System
-
-- **Dark Mode**: Enabled by default
-- **Glassmorphism**: Custom `.glass` utility class
-- **Color Palette**: HSL-based with CSS variables
-- **Typography**: Inter font family
-- **Animations**: Tailwind transitions + hover effects
-
-## 📝 Scripts
-
-```bash
-npm run dev      # Start development server
-npm run build    # Build for production
-npm run start    # Start production server
-npm run lint     # Run ESLint
-```
-
-## 🛠️ Tech Decisions
-
-### Why This Stack?
-
-1. **Next.js 14**: Industry standard, SEO-friendly, fast
-2. **TypeScript**: Catches bugs before runtime
-3. **Supabase**: Managed Postgres with built-in auth
-4. **Tailwind**: Rapid UI development with consistency
-5. **Gemini AI**: Powerful, cost-effective AI capabilities
-
-### Migration from Original Stack
-
-| Original | New | Benefit |
-|----------|-----|---------|
-| Express.js | Next.js API Routes | Unified codebase |
-| Vanilla JS | TypeScript + React | Type safety |
-| Vanilla CSS | Tailwind CSS | Faster development |
-| Passport.js | Supabase Auth | Less boilerplate |
-| Sequelize | Prisma (planned) | Better DX |
-
-## 📚 Next Steps
-
-1. ✅ Install Node.js and dependencies
-2. ✅ Configure environment variables
-3. ⏳ Set up Supabase project
-4. ⏳ Create database tables
-5. ⏳ Test all features
-6. ⏳ Deploy to Vercel
+- Server-side rendering (SSR)
+- Static generation where possible
+- Image optimization
+- Code splitting
+- Lazy loading
 
 ## 🤝 Contributing
 
-This is a migration of the original Tvi3W project to modern technologies.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📄 License
+## 📝 License
 
-ISC
+This project is licensed under the MIT License.
+
+## 🙏 Acknowledgments
+
+- Google Gemini AI for powerful AI capabilities
+- Supabase for backend infrastructure
+- Vercel for hosting
+- Next.js team for the amazing framework
+
+## 📧 Contact
+
+For questions or support, please open an issue on GitHub.
 
 ---
 
-**Built with ❤️ using the Modern Gold Standard Stack**
+**Built with ❤️ using Next.js, Supabase, and Gemini AI**
