@@ -1,13 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
+
+interface AnalysisResult {
+    summary: string
+    keyTakeaways: string[]
+    suggestedActions: string[]
+    sentiment: 'positive' | 'negative' | 'neutral'
+    relevance: 'high' | 'medium' | 'low'
+}
 
 export default function AnalysisPage() {
     const [content, setContent] = useState('')
     const [contentType, setContentType] = useState<'linkedin' | 'twitter' | 'email' | 'article'>('article')
     const [loading, setLoading] = useState(false)
-    const [result, setResult] = useState<any>(null)
+    const [result, setResult] = useState<AnalysisResult | null>(null)
     const [error, setError] = useState<string | null>(null)
 
     const handleAnalyze = async () => {
@@ -75,8 +83,8 @@ export default function AnalysisPage() {
                                     key={type}
                                     onClick={() => setContentType(type)}
                                     className={`px-4 py-2 rounded-lg font-medium transition-all ${contentType === type
-                                            ? 'bg-blue-600 text-white'
-                                            : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                                        ? 'bg-blue-600 text-white'
+                                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                                         }`}
                                 >
                                     {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -154,8 +162,8 @@ export default function AnalysisPage() {
                                 <div className="flex items-center gap-2">
                                     <span className="text-sm text-gray-400">Sentiment:</span>
                                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${result.sentiment === 'positive' ? 'bg-green-500/20 text-green-400' :
-                                            result.sentiment === 'negative' ? 'bg-red-500/20 text-red-400' :
-                                                'bg-gray-500/20 text-gray-400'
+                                        result.sentiment === 'negative' ? 'bg-red-500/20 text-red-400' :
+                                            'bg-gray-500/20 text-gray-400'
                                         }`}>
                                         {result.sentiment}
                                     </span>
@@ -163,8 +171,8 @@ export default function AnalysisPage() {
                                 <div className="flex items-center gap-2">
                                     <span className="text-sm text-gray-400">Relevance:</span>
                                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${result.relevance === 'high' ? 'bg-blue-500/20 text-blue-400' :
-                                            result.relevance === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
-                                                'bg-gray-500/20 text-gray-400'
+                                        result.relevance === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                                            'bg-gray-500/20 text-gray-400'
                                         }`}>
                                         {result.relevance}
                                     </span>
