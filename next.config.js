@@ -7,6 +7,9 @@ const nextConfig = {
     eslint: {
         ignoreDuringBuilds: true,
     },
+    // Use standalone output for smaller bundle
+    output: 'standalone',
+    // Reduce experimental features
     experimental: {
         serverActions: {
             bodySizeLimit: '2mb',
@@ -14,11 +17,12 @@ const nextConfig = {
     },
     images: {
         domains: ['lh3.googleusercontent.com', 'avatars.githubusercontent.com'],
+        unoptimized: true, // Reduce image optimization overhead
     },
     // Performance optimizations
     compress: true,
     poweredByHeader: false,
-    reactStrictMode: true,
+    reactStrictMode: false, // Disable strict mode in production
     swcMinify: true,
 }
 
