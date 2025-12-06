@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import AuthButton from './auth-button'
 
 export default function Navigation() {
     const pathname = usePathname()
@@ -12,6 +13,7 @@ export default function Navigation() {
         { href: '/analysis', label: 'Analysis', icon: '🔍' },
         { href: '/meetings', label: 'Meetings', icon: '🎯' },
         { href: '/business', label: 'Business', icon: '💼' },
+        { href: '/dashboard/profile', label: 'Profile', icon: '👤' },
     ]
 
     return (
@@ -28,9 +30,8 @@ export default function Navigation() {
                     </div>
 
                     {/* Auth Button */}
-                    <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all">
-                        Sign In
-                    </button>
+                    {/* Auth Button */}
+                    <AuthButton />
                 </div>
 
                 {/* Mobile Navigation */}
