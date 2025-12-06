@@ -99,6 +99,27 @@ export default function LoginPage() {
                             required
                             className="mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                         />
+                        {view === 'sign-in' && (
+                            <button
+                                type="button"
+                                onClick={async () => {
+                                    if (!email) {
+                                        setError('Please enter your email first')
+                                        return
+                                    }
+                                    setLoading(true)
+                                    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                                        redirectTo: `${location.origin}/auth/callback?next=/reset-password`,
+                                    })
+                                    setLoading(false)
+                                    if (error) setError(error.message)
+                                    else alert('Check your email for the password reset link!')
+                                }}
+                                className="mt-2 text-sm text-blue-400 hover:text-blue-300"
+                            >
+                                Forgot password?
+                            </button>
+                        )}
                     </div>
                     <button
                         type="submit"

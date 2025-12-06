@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import Navigation from "@/components/Navigation"
+import Footer from "@/components/footer"
 import { AuthProvider } from "@/lib/auth-context"
 import CommandPalette from "@/components/command-palette"
 
@@ -52,13 +53,17 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en" className="dark">
-            <body className={inter.className}>
+            <body className={`${inter.className} flex flex-col min-h-screen`}>
                 <AuthProvider>
                     <Navigation />
-                    {children}
+                    <main className="flex-1">
+                        {children}
+                    </main>
+                    <Footer />
                     <CommandPalette />
                 </AuthProvider>
             </body>
         </html>
     )
 }
+
