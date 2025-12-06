@@ -13,7 +13,9 @@ export default function Navigation() {
         { href: '/meetings', label: 'Meetings', icon: '📅' },
         { href: '/contacts', label: 'Contacts', icon: '👥' },
         { href: '/notes', label: 'Notes', icon: '📝' },
-        { href: '/analysis', label: 'Analysis', icon: '🤖' },
+        { href: '/action-items', label: 'Tasks', icon: '⚡' },
+        { href: '/business', label: 'Business', icon: '💼' },
+        { href: '/analysis', label: 'AI', icon: '🤖' },
     ]
 
     return (
