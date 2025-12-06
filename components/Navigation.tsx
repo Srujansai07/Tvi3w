@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import AuthButton from './auth-button'
+import { NotificationBell } from './notifications'
 
 export default function Navigation() {
     const pathname = usePathname()
@@ -31,9 +32,11 @@ export default function Navigation() {
                     <div className="hidden md:flex items-center space-x-1">
                     </div>
 
-                    {/* Auth Button */}
-                    {/* Auth Button */}
-                    <AuthButton />
+                    {/* Notifications and Auth */}
+                    <div className="flex items-center gap-3">
+                        <NotificationBell />
+                        <AuthButton />
+                    </div>
                 </div>
 
                 {/* Mobile Navigation */}
