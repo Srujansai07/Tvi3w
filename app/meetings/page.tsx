@@ -1,28 +1,103 @@
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+'use client'
+
+import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import SearchBar from '@/components/ui/search-bar'
+import FilterChips from '@/components/ui/filter-chips'
 
-export const dynamic = 'force-dynamic'
+interface Meeting {
+    id: string
+    title: string
+    description: string | null
+    start_time: string | null
+    location: string | null
+    status: string
+    meeting_type: string | null
+}
 
-export default async function MeetingsPage() {
+const statusOptions = [
+    { value: 'all', label: 'All' },
+    { value: 'scheduled', label: 'Scheduled' },
+    { value: 'completed', label: 'Completed' },
+    { value: 'cancelled', label: 'Cancelled' },
+]
+
+export default function MeetingsPage() {
     const supabase = createClient()
+    const router = useRouter()
+    const [meetings, setMeetings] = useState<Meeting[]>([])
+    const [filteredMeetings, setFilteredMeetings] = useState<Meeting[]>([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+    const [searchQuery, setSearchQuery] = useState('')
+    const [statusFilter, setStatusFilter] = useState('all')
 
-    const { data: { session } } = await supabase.auth.getSession()
+    useEffect(() => {
+        async function fetchMeetings() {
+            const { data: { session } } = await supabase.auth.getSession()
+            if (!session) {
+                router.push('/login')
+                return
+            }
 
-    if (!session) {
-        redirect('/login')
+            const { data, error } = await supabase
+                .from('meetings')
+                .select('*')
+                .eq('user_id', session.user.id)
+                .order('start_time', { ascending: false })
+
+            if (error) {
+                setError(error.message)
+            } else {
+                setMeetings(data || [])
+                setFilteredMeetings(data || [])
+            }
+            setLoading(false)
+        }
+        fetchMeetings()
+    }, [])
+
+    useEffect(() => {
+        let result = meetings
+
+        // Apply search filter
+        if (searchQuery) {
+            result = result.filter(m =>
+                m.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                m.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                m.location?.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+        }
+
+        // Apply status filter
+        if (statusFilter !== 'all') {
+            result = result.filter(m => m.status === statusFilter)
+        }
+
+        setFilteredMeetings(result)
+    }, [searchQuery, statusFilter, meetings])
+
+    if (loading) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <div className="max-w-4xl mx-auto animate-pulse">
+                    <div className="h-8 bg-gray-700 rounded w-1/4 mb-8"></div>
+                    <div className="space-y-4">
+                        {[1, 2, 3].map(i => (
+                            <div key={i} className="bg-gray-800 rounded-xl p-6 h-32"></div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        )
     }
-
-    const { data: meetings, error } = await supabase
-        .from('meetings')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .order('start_time', { ascending: false })
 
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="max-w-4xl mx-auto">
-                <div className="flex justify-between items-center mb-8">
+                <div className="flex justify-between items-center mb-6">
                     <div>
                         <h1 className="text-3xl font-bold text-white mb-2">Meetings</h1>
                         <p className="text-gray-400">Manage your meetings and appointments</p>
@@ -35,15 +110,29 @@ export default async function MeetingsPage() {
                     </Link>
                 </div>
 
+                {/* Search and Filter */}
+                <div className="mb-6 space-y-4">
+                    <SearchBar
+                        placeholder="Search meetings..."
+                        onSearch={setSearchQuery}
+                        className="max-w-md"
+                    />
+                    <FilterChips
+                        options={statusOptions}
+                        selected={statusFilter}
+                        onChange={setStatusFilter}
+                    />
+                </div>
+
                 {error && (
                     <div className="bg-red-900/50 border border-red-500/50 text-red-200 p-4 rounded-lg mb-6">
-                        Error loading meetings: {error.message}
+                        Error: {error}
                     </div>
                 )}
 
-                {meetings && meetings.length > 0 ? (
+                {filteredMeetings.length > 0 ? (
                     <div className="space-y-4">
-                        {meetings.map((meeting: any) => (
+                        {filteredMeetings.map((meeting) => (
                             <Link
                                 key={meeting.id}
                                 href={`/meetings/${meeting.id}`}
@@ -81,14 +170,22 @@ export default async function MeetingsPage() {
                 ) : (
                     <div className="bg-gray-800 rounded-xl p-12 border border-gray-700 text-center">
                         <div className="text-6xl mb-4">📅</div>
-                        <h3 className="text-xl font-semibold text-white mb-2">No meetings yet</h3>
-                        <p className="text-gray-400 mb-6">Create your first meeting to get started</p>
-                        <Link
-                            href="/meetings/new"
-                            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors inline-block"
-                        >
-                            Create Your First Meeting
-                        </Link>
+                        <h3 className="text-xl font-semibold text-white mb-2">
+                            {searchQuery || statusFilter !== 'all' ? 'No matching meetings' : 'No meetings yet'}
+                        </h3>
+                        <p className="text-gray-400 mb-6">
+                            {searchQuery || statusFilter !== 'all'
+                                ? 'Try a different search or filter'
+                                : 'Create your first meeting to get started'}
+                        </p>
+                        {!(searchQuery || statusFilter !== 'all') && (
+                            <Link
+                                href="/meetings/new"
+                                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors inline-block"
+                            >
+                                Create Your First Meeting
+                            </Link>
+                        )}
                     </div>
                 )}
             </div>
