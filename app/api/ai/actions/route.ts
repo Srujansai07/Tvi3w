@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { summarizeMeeting } from '@/lib/gemini'
+import { extractActionItems } from '@/lib/gemini'
 
 export async function POST(request: NextRequest) {
     try {
@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        const { meetingId, notes, title } = await request.json()
+        const { meetingId, notes } = await request.json()
 
         if (!notes) {
             return NextResponse.json({ error: 'Notes are required' }, { status: 400 })
@@ -25,22 +25,22 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        const summary = await summarizeMeeting(notes, title)
+        const actionItems = await extractActionItems(notes)
 
-        // Optionally save the summary as an insight
-        if (meetingId) {
-            await supabase.from('insights').insert({
-                user_id: session.user.id,
+        // Optionally save action items to the database
+        if (meetingId && actionItems.length > 0) {
+            const items = actionItems.map(item => ({
                 meeting_id: meetingId,
-                type: 'summary',
-                content: summary,
-                priority: 'medium',
-            })
+                title: item,
+                status: 'pending',
+            }))
+
+            await supabase.from('action_items').insert(items)
         }
 
-        return NextResponse.json({ summary })
+        return NextResponse.json({ actionItems })
     } catch (error: any) {
-        console.error('Summarize API Error:', error)
+        console.error('Extract Action Items API Error:', error)
         return NextResponse.json({ error: error.message }, { status: 500 })
     }
 }

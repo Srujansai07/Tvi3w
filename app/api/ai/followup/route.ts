@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { summarizeMeeting } from '@/lib/gemini'
+import { generateFollowUpEmail } from '@/lib/gemini'
 
 export async function POST(request: NextRequest) {
     try {
@@ -11,10 +11,10 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        const { meetingId, notes, title } = await request.json()
+        const { meetingTitle, notes, attendees } = await request.json()
 
-        if (!notes) {
-            return NextResponse.json({ error: 'Notes are required' }, { status: 400 })
+        if (!notes || !meetingTitle) {
+            return NextResponse.json({ error: 'Meeting title and notes are required' }, { status: 400 })
         }
 
         // Check if Gemini API key is configured
@@ -25,22 +25,11 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        const summary = await summarizeMeeting(notes, title)
+        const email = await generateFollowUpEmail(meetingTitle, notes, attendees)
 
-        // Optionally save the summary as an insight
-        if (meetingId) {
-            await supabase.from('insights').insert({
-                user_id: session.user.id,
-                meeting_id: meetingId,
-                type: 'summary',
-                content: summary,
-                priority: 'medium',
-            })
-        }
-
-        return NextResponse.json({ summary })
+        return NextResponse.json({ email })
     } catch (error: any) {
-        console.error('Summarize API Error:', error)
+        console.error('Follow-up Email API Error:', error)
         return NextResponse.json({ error: error.message }, { status: 500 })
     }
 }

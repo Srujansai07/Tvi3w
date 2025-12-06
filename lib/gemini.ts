@@ -1,281 +1,145 @@
-// Gemini AI Service for Tvi3W
-// Handles all AI-powered features: question generation, transcription, summarization
+import { GoogleGenerativeAI } from '@google/generative-ai'
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY
+// Initialize Gemini AI client
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
 
-if (!GEMINI_API_KEY) {
-    console.error('❌ GEMINI_API_KEY is not set')
+// Get the Gemini Pro model
+export function getGeminiModel() {
+    return genAI.getGenerativeModel({ model: 'gemini-pro' })
 }
 
-// Generate contextual questions for meetings
-export async function generateMeetingQuestions(context: {
-    topic: string
-    participants?: string[]
-    meetingType?: 'professional' | 'presentation' | 'interview' | 'informal'
-}): Promise<{
-    professional: string[]
-    social: string[]
-    humorous: string[]
-}> {
-    if (!GEMINI_API_KEY) {
-        throw new Error('Gemini API key not configured')
-    }
-
+// Summarize meeting notes
+export async function summarizeMeeting(notes: string, meetingTitle?: string): Promise<string> {
     try {
-        const prompt = `You are an AI meeting assistant. Generate 3 insightful questions for a ${context.meetingType || 'professional'} meeting about "${context.topic}".
+        const model = getGeminiModel()
 
-${context.participants ? `Participants: ${context.participants.join(', ')}` : ''}
+        const prompt = `You are an AI assistant that summarizes meeting notes.
 
-Generate 3 questions from each angle:
-1. **Professional**: Business-focused, strategic questions
-2. **Social**: Relationship-building, exploratory questions  
-3. **Humorous**: Light-hearted, ice-breaker questions
+Meeting Title: ${meetingTitle || 'Untitled Meeting'}
 
-IMPORTANT: Respond ONLY with valid JSON in this exact format:
-{
-  "professional": ["question1", "question2", "question3"],
-  "social": ["question1", "question2", "question3"],
-  "humorous": ["question1", "question2", "question3"]
-}`
+Notes:
+${notes}
 
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                }),
-            }
-        )
+Please provide a concise summary of this meeting including:
+1. Key discussion points
+2. Decisions made
+3. Important takeaways
 
-        if (!response.ok) {
-            throw new Error(`Gemini API error: ${response.statusText}`)
-        }
+Keep the summary brief and professional.`
 
-        const data = await response.json()
-        const text = data.candidates[0].content.parts[0].text
-
-        // Extract JSON from markdown code blocks or plain JSON
-        let jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/)
-        if (!jsonMatch) {
-            jsonMatch = text.match(/\{[\s\S]*\}/)
-        }
-
-        if (!jsonMatch) {
-            throw new Error('Failed to parse Gemini response')
-        }
-
-        const jsonStr = jsonMatch[1] || jsonMatch[0]
-        return JSON.parse(jsonStr)
-    } catch (error) {
-        console.error('Error generating questions:', error)
-        throw error
+        const result = await model.generateContent(prompt)
+        const response = await result.response
+        return response.text()
+    } catch (error: any) {
+        console.error('Gemini API Error:', error)
+        throw new Error('Failed to summarize meeting: ' + error.message)
     }
 }
 
-// Summarize meeting transcript
-export async function summarizeMeeting(transcript: string): Promise<{
-    summary: string
-    keyPoints: string[]
-    actionItems: string[]
-    sentiment: 'positive' | 'neutral' | 'negative'
-}> {
-    if (!GEMINI_API_KEY) {
-        throw new Error('Gemini API key not configured')
-    }
-
+// Extract action items from notes
+export async function extractActionItems(notes: string): Promise<string[]> {
     try {
-        const prompt = `Analyze this meeting transcript and provide:
-1. A concise summary (2-3 sentences)
-2. Key points discussed (max 5)
-3. Action items identified (if any)
-4. Overall sentiment (positive/neutral/negative)
+        const model = getGeminiModel()
 
-Transcript:
-${transcript}
+        const prompt = `You are an AI assistant that extracts action items from meeting notes.
 
-IMPORTANT: Respond ONLY with valid JSON in this exact format:
-{
-  "summary": "...",
-  "keyPoints": ["point1", "point2", "point3"],
-  "actionItems": ["item1", "item2"],
-  "sentiment": "positive"
-}`
+Notes:
+${notes}
 
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                }),
+Extract all action items, tasks, and follow-ups mentioned in these notes.
+Return them as a JSON array of strings, for example: ["Task 1", "Task 2", "Task 3"]
+Only return the JSON array, nothing else.`
+
+        const result = await model.generateContent(prompt)
+        const response = await result.response
+        const text = response.text().trim()
+
+        // Try to parse as JSON
+        try {
+            const items = JSON.parse(text)
+            if (Array.isArray(items)) {
+                return items
             }
-        )
-
-        if (!response.ok) {
-            throw new Error(`Gemini API error: ${response.statusText}`)
+        } catch {
+            // If not valid JSON, split by newlines
+            return text.split('\n').filter(item => item.trim().length > 0)
         }
 
-        const data = await response.json()
-        const text = data.candidates[0].content.parts[0].text
-
-        let jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/)
-        if (!jsonMatch) {
-            jsonMatch = text.match(/\{[\s\S]*\}/)
-        }
-
-        if (!jsonMatch) {
-            throw new Error('Failed to parse Gemini response')
-        }
-
-        const jsonStr = jsonMatch[1] || jsonMatch[0]
-        return JSON.parse(jsonStr)
-    } catch (error) {
-        console.error('Error summarizing meeting:', error)
-        throw error
+        return []
+    } catch (error: any) {
+        console.error('Gemini API Error:', error)
+        throw new Error('Failed to extract action items: ' + error.message)
     }
 }
 
-// Analyze content (LinkedIn, Twitter, articles)
-export async function analyzeContent(content: {
-    url?: string
-    text: string
-    type: 'linkedin' | 'twitter' | 'email' | 'article'
-}): Promise<{
-    summary: string
-    keyTakeaways: string[]
-    suggestedActions: string[]
-    sentiment: 'positive' | 'neutral' | 'negative'
-    relevance: 'high' | 'medium' | 'low'
-}> {
-    if (!GEMINI_API_KEY) {
-        throw new Error('Gemini API key not configured')
-    }
-
+// Generate follow-up email
+export async function generateFollowUpEmail(
+    meetingTitle: string,
+    notes: string,
+    attendees?: string[]
+): Promise<string> {
     try {
-        const prompt = `Analyze this ${content.type} content and provide:
-1. A brief summary
-2. Key takeaways (max 3)
-3. Suggested actions (max 3)
-4. Sentiment analysis
-5. Relevance score
+        const model = getGeminiModel()
 
-Content:
-${content.text}
+        const attendeeList = attendees?.length
+            ? `Attendees: ${attendees.join(', ')}`
+            : ''
 
-IMPORTANT: Respond ONLY with valid JSON in this exact format:
-{
-  "summary": "...",
-  "keyTakeaways": ["takeaway1", "takeaway2", "takeaway3"],
-  "suggestedActions": ["action1", "action2", "action3"],
-  "sentiment": "positive",
-  "relevance": "high"
-}`
+        const prompt = `You are an AI assistant that generates professional follow-up emails after meetings.
 
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                }),
-            }
-        )
+Meeting Title: ${meetingTitle}
+${attendeeList}
 
-        if (!response.ok) {
-            throw new Error(`Gemini API error: ${response.statusText}`)
-        }
+Notes:
+${notes}
 
-        const data = await response.json()
-        const text = data.candidates[0].content.parts[0].text
+Generate a professional follow-up email that:
+1. Thanks attendees for their time
+2. Summarizes key discussion points
+3. Lists action items and who is responsible
+4. Mentions next steps if any
 
-        let jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/)
-        if (!jsonMatch) {
-            jsonMatch = text.match(/\{[\s\S]*\}/)
-        }
+Keep the tone professional but friendly.`
 
-        if (!jsonMatch) {
-            throw new Error('Failed to parse Gemini response')
-        }
-
-        const jsonStr = jsonMatch[1] || jsonMatch[0]
-        return JSON.parse(jsonStr)
-    } catch (error) {
-        console.error('Error analyzing content:', error)
-        throw error
+        const result = await model.generateContent(prompt)
+        const response = await result.response
+        return response.text()
+    } catch (error: any) {
+        console.error('Gemini API Error:', error)
+        throw new Error('Failed to generate follow-up email: ' + error.message)
     }
 }
 
-// Analyze business pitch (Shark Tank style)
-export async function analyzeBusinessPitch(pitch: string): Promise<{
-    strengths: string[]
-    weaknesses: string[]
-    marketViability: string
-    investmentRecommendation: 'yes' | 'no' | 'maybe'
-    implementationRoadmap: string[]
-    risks: string[]
-}> {
-    if (!GEMINI_API_KEY) {
-        throw new Error('Gemini API key not configured')
-    }
-
+// Analyze meeting trends
+export async function analyzeMeetingTrends(meetings: any[]): Promise<string> {
     try {
-        const prompt = `You are a Shark Tank investor. Analyze this business pitch:
+        const model = getGeminiModel()
 
-${pitch}
+        const meetingData = meetings.map(m => ({
+            title: m.title,
+            type: m.meeting_type,
+            status: m.status,
+            date: m.start_time,
+        }))
 
-Provide:
-1. Strengths (max 3)
-2. Weaknesses (max 3)
-3. Market viability assessment
-4. Investment recommendation (yes/no/maybe)
-5. Implementation roadmap (max 5 steps)
-6. Key risks (max 3)
+        const prompt = `You are an AI assistant that analyzes meeting patterns.
 
-IMPORTANT: Respond ONLY with valid JSON in this exact format:
-{
-  "strengths": ["strength1", "strength2", "strength3"],
-  "weaknesses": ["weakness1", "weakness2", "weakness3"],
-  "marketViability": "detailed assessment here",
-  "investmentRecommendation": "yes",
-  "implementationRoadmap": ["step1", "step2", "step3", "step4", "step5"],
-  "risks": ["risk1", "risk2", "risk3"]
-}`
+Meeting Data:
+${JSON.stringify(meetingData, null, 2)}
 
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                }),
-            }
-        )
+Analyze these meetings and provide insights on:
+1. Meeting frequency patterns
+2. Most common meeting types
+3. Completion rate
+4. Suggestions for improving meeting efficiency
 
-        if (!response.ok) {
-            throw new Error(`Gemini API error: ${response.statusText}`)
-        }
+Keep the analysis brief and actionable.`
 
-        const data = await response.json()
-        const text = data.candidates[0].content.parts[0].text
-
-        let jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/)
-        if (!jsonMatch) {
-            jsonMatch = text.match(/\{[\s\S]*\}/)
-        }
-
-        if (!jsonMatch) {
-            throw new Error('Failed to parse Gemini response')
-        }
-
-        const jsonStr = jsonMatch[1] || jsonMatch[0]
-        return JSON.parse(jsonStr)
-    } catch (error) {
-        console.error('Error analyzing pitch:', error)
-        throw error
+        const result = await model.generateContent(prompt)
+        const response = await result.response
+        return response.text()
+    } catch (error: any) {
+        console.error('Gemini API Error:', error)
+        throw new Error('Failed to analyze meeting trends: ' + error.message)
     }
 }
