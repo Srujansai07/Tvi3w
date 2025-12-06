@@ -1,11 +1,12 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
 // Initialize Gemini AI client
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
+const apiKey = process.env.GEMINI_API_KEY || ''
+const genAI = new GoogleGenerativeAI(apiKey)
 
-// Get the Gemini Pro model
+// Get the Gemini model - using gemini-1.5-flash (fast and free tier)
 export function getGeminiModel() {
-    return genAI.getGenerativeModel({ model: 'gemini-pro' })
+    return genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
 }
 
 // Summarize meeting notes
@@ -62,7 +63,7 @@ Only return the JSON array, nothing else.`
             }
         } catch {
             // If not valid JSON, split by newlines
-            return text.split('\n').filter(item => item.trim().length > 0)
+            return text.split('\n').filter((item: string) => item.trim().length > 0)
         }
 
         return []
