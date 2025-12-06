@@ -10,10 +10,10 @@ export default function Navigation() {
     const links = [
         { href: '/', label: 'Home', icon: '🏠' },
         { href: '/dashboard', label: 'Dashboard', icon: '📊' },
-        { href: '/analysis', label: 'Analysis', icon: '🔍' },
-        { href: '/meetings', label: 'Meetings', icon: '🎯' },
-        { href: '/business', label: 'Business', icon: '💼' },
-        { href: '/dashboard/profile', label: 'Profile', icon: '👤' },
+        { href: '/meetings', label: 'Meetings', icon: '📅' },
+        { href: '/contacts', label: 'Contacts', icon: '👥' },
+        { href: '/notes', label: 'Notes', icon: '📝' },
+        { href: '/analysis', label: 'Analysis', icon: '🤖' },
     ]
 
     return (
