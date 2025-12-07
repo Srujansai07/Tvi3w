@@ -4,9 +4,9 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 const apiKey = process.env.GEMINI_API_KEY || ''
 const genAI = new GoogleGenerativeAI(apiKey)
 
-// Get the Gemini model
+// Get the Gemini model - using gemini-2.0-flash (confirmed available)
 export function getGeminiModel() {
-    return genAI.getGenerativeModel({ model: 'gemini-pro' })
+    return genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
 }
 
 
