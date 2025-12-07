@@ -1,156 +1,56 @@
+'use client'
+
 import Link from 'next/link'
 
-const shortcuts = [
-    { keys: 'H', description: 'Go to Home' },
-    { keys: 'D', description: 'Go to Dashboard' },
-    { keys: 'M', description: 'Go to Meetings' },
-    { keys: 'C', description: 'Go to Contacts' },
-    { keys: 'N', description: 'Go to Notes' },
-    { keys: 'T', description: 'Go to Tasks' },
-    { keys: 'A', description: 'Go to AI Analysis' },
-    { keys: '/', description: 'Show shortcuts help' },
-    { keys: 'Ctrl+K', description: 'Open Command Palette' },
-    { keys: 'Shift+N', description: 'New Meeting' },
-    { keys: 'Shift+C', description: 'New Contact' },
+const HELP_TOPICS = [
+    { title: 'Getting Started', icon: '🚀', items: ['Create your first meeting', 'Add contacts', 'Take notes', 'Use AI features'] },
+    { title: 'Meetings', icon: '📅', items: ['Schedule meetings', 'Set reminders', 'Recurring meetings', 'Meeting templates'] },
+    { title: 'Notes & Tags', icon: '📝', items: ['Quick notes', 'Tag organization', 'Search notes', 'Export notes'] },
+    { title: 'AI Features', icon: '🤖', items: ['Meeting analysis', 'Extract action items', 'Smart summaries', 'Insights'] },
+    { title: 'Settings', icon: '⚙️', items: ['Profile settings', 'Notifications', 'Integrations', 'Data export'] },
+    { title: 'Keyboard Shortcuts', icon: '⌨️', items: ['Navigation', 'Quick actions', 'Focus mode', 'Search'] },
 ]
 
-const features = [
-    {
-        emoji: '📅',
-        title: 'Meetings',
-        description: 'Schedule, track, and manage all your meetings in one place. Add notes, track status, and set reminders.',
-    },
-    {
-        emoji: '👥',
-        title: 'Contacts',
-        description: 'Keep a directory of all your professional contacts with company, role, and contact information.',
-    },
-    {
-        emoji: '📝',
-        title: 'Notes',
-        description: 'Take notes during meetings and tag them for easy organization and retrieval.',
-    },
-    {
-        emoji: '⚡',
-        title: 'Action Items',
-        description: 'Track follow-ups and tasks from your meetings. Mark them complete as you go.',
-    },
-    {
-        emoji: '🤖',
-        title: 'AI Analysis',
-        description: 'Use Gemini AI to summarize meetings, extract action items, and analyze trends.',
-    },
-    {
-        emoji: '📊',
-        title: 'Reports',
-        description: 'View statistics and export your data in JSON or CSV format.',
-    },
-    {
-        emoji: '🗓️',
-        title: 'Calendar',
-        description: 'View all your meetings in a calendar format with color-coded status indicators.',
-    },
-    {
-        emoji: '⚙️',
-        title: 'Settings',
-        description: 'Customize your experience with theme, notifications, and preferences.',
-    },
+const FAQS = [
+    { q: 'How do I create a meeting?', a: 'Click the "New Meeting" button on the dashboard or press N+M.' },
+    { q: 'Can I import contacts from CSV?', a: 'Yes! Go to /import to upload a CSV file with your contacts.' },
+    { q: 'How does AI analysis work?', a: 'Our AI analyzes your meeting notes to extract key points, action items, and summaries.' },
+    { q: 'Is my data secure?', a: 'Yes, all data is encrypted and stored securely in Supabase.' },
 ]
 
 export default function HelpPage() {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="max-w-4xl mx-auto">
-                <h1 className="text-3xl font-bold text-white mb-2">Help & Documentation</h1>
-                <p className="text-gray-400 mb-8">Learn how to use Tvi3W effectively</p>
+                <div className="flex items-center gap-3 mb-8"><span className="text-4xl">❓</span><div><h1 className="text-3xl font-bold text-white">Help Center</h1><p className="text-gray-400">Find answers and learn how to use Tvi3W</p></div></div>
 
-                {/* Getting Started */}
-                <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 mb-8">
-                    <h2 className="text-xl font-semibold text-white mb-4">🚀 Getting Started</h2>
-                    <ol className="space-y-3 text-gray-300">
-                        <li className="flex gap-3">
-                            <span className="text-blue-400 font-bold">1.</span>
-                            <span>Sign in with your Google or GitHub account</span>
-                        </li>
-                        <li className="flex gap-3">
-                            <span className="text-blue-400 font-bold">2.</span>
-                            <span>Create your first meeting from the Dashboard or Meetings page</span>
-                        </li>
-                        <li className="flex gap-3">
-                            <span className="text-blue-400 font-bold">3.</span>
-                            <span>Add contacts you frequently meet with</span>
-                        </li>
-                        <li className="flex gap-3">
-                            <span className="text-blue-400 font-bold">4.</span>
-                            <span>Take notes during your meetings</span>
-                        </li>
-                        <li className="flex gap-3">
-                            <span className="text-blue-400 font-bold">5.</span>
-                            <span>Use AI Analysis to get insights from your meetings</span>
-                        </li>
-                    </ol>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-12">
+                    {HELP_TOPICS.map(t => (
+                        <div key={t.title} className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                            <div className="text-3xl mb-3">{t.icon}</div>
+                            <h3 className="text-white font-semibold mb-3">{t.title}</h3>
+                            <ul className="space-y-1">
+                                {t.items.map(item => <li key={item} className="text-gray-400 text-sm">• {item}</li>)}
+                            </ul>
+                        </div>
+                    ))}
                 </div>
 
-                {/* Features */}
-                <div className="mb-8">
-                    <h2 className="text-xl font-semibold text-white mb-4">✨ Features</h2>
-                    <div className="grid gap-4 md:grid-cols-2">
-                        {features.map((feature) => (
-                            <div key={feature.title} className="bg-gray-800 rounded-xl p-4 border border-gray-700">
-                                <div className="flex items-center gap-3 mb-2">
-                                    <span className="text-2xl">{feature.emoji}</span>
-                                    <h3 className="text-white font-medium">{feature.title}</h3>
-                                </div>
-                                <p className="text-gray-400 text-sm">{feature.description}</p>
-                            </div>
-                        ))}
-                    </div>
+                <h2 className="text-2xl font-bold text-white mb-6">FAQs</h2>
+                <div className="space-y-4 mb-12">
+                    {FAQS.map((f, i) => (
+                        <div key={i} className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                            <h3 className="text-white font-semibold mb-2">{f.q}</h3>
+                            <p className="text-gray-400">{f.a}</p>
+                        </div>
+                    ))}
                 </div>
 
-                {/* Keyboard Shortcuts */}
-                <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 mb-8">
-                    <h2 className="text-xl font-semibold text-white mb-4">⌨️ Keyboard Shortcuts</h2>
-                    <div className="grid gap-2 md:grid-cols-2">
-                        {shortcuts.map((shortcut) => (
-                            <div key={shortcut.keys} className="flex justify-between items-center py-2 px-3 bg-gray-700/50 rounded-lg">
-                                <span className="text-gray-300">{shortcut.description}</span>
-                                <kbd className="px-2 py-1 bg-gray-600 rounded text-gray-300 text-sm font-mono">
-                                    {shortcut.keys}
-                                </kbd>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Quick Links */}
-                <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                    <h2 className="text-xl font-semibold text-white mb-4">🔗 Quick Links</h2>
-                    <div className="grid gap-3 md:grid-cols-3">
-                        <Link href="/dashboard" className="flex items-center gap-2 p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition-colors">
-                            <span>📊</span>
-                            <span className="text-white">Dashboard</span>
-                        </Link>
-                        <Link href="/meetings/new" className="flex items-center gap-2 p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition-colors">
-                            <span>📅</span>
-                            <span className="text-white">New Meeting</span>
-                        </Link>
-                        <Link href="/analysis" className="flex items-center gap-2 p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition-colors">
-                            <span>🤖</span>
-                            <span className="text-white">AI Analysis</span>
-                        </Link>
-                        <Link href="/export" className="flex items-center gap-2 p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition-colors">
-                            <span>📦</span>
-                            <span className="text-white">Export Data</span>
-                        </Link>
-                        <Link href="/reports" className="flex items-center gap-2 p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition-colors">
-                            <span>📈</span>
-                            <span className="text-white">View Reports</span>
-                        </Link>
-                        <Link href="/settings" className="flex items-center gap-2 p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition-colors">
-                            <span>⚙️</span>
-                            <span className="text-white">Settings</span>
-                        </Link>
-                    </div>
+                <div className="bg-blue-600/10 rounded-xl p-6 border border-blue-500/30 text-center">
+                    <div className="text-3xl mb-3">💬</div>
+                    <h3 className="text-white font-semibold mb-2">Still need help?</h3>
+                    <p className="text-gray-400 mb-4">Contact our support team</p>
+                    <Link href="/feedback" className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors">Contact Support</Link>
                 </div>
             </div>
         </div>

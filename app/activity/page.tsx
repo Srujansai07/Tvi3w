@@ -1,185 +1,71 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 interface Activity {
     id: string
-    type: 'meeting' | 'contact' | 'note'
-    action: 'created' | 'updated' | 'completed'
+    type: 'meeting' | 'note' | 'contact'
+    action: 'created' | 'updated' | 'deleted'
     title: string
-    createdAt: Date
-    link: string
+    timestamp: string
 }
 
 export default function ActivityPage() {
     const supabase = createClient()
-    const [activities, setActivities] = useState<Activity[]>([])
+    const router = useRouter()
     const [loading, setLoading] = useState(true)
+    const [activities, setActivities] = useState<Activity[]>([])
 
     useEffect(() => {
-        async function fetchActivity() {
+        async function loadActivity() {
             const { data: { session } } = await supabase.auth.getSession()
-            if (!session) return
+            if (!session) { router.push('/login'); return }
 
-            const allActivities: Activity[] = []
+            const [meetings, notes, contacts] = await Promise.all([
+                supabase.from('meetings').select('id, title, created_at, updated_at').eq('user_id', session.user.id).order('created_at', { ascending: false }).limit(20),
+                supabase.from('notes').select('id, content, created_at, updated_at').eq('user_id', session.user.id).order('created_at', { ascending: false }).limit(20),
+                supabase.from('contacts').select('id, email, created_at').eq('user_id', session.user.id).order('created_at', { ascending: false }).limit(20),
+            ])
 
-            // Recent meetings
-            const { data: meetings } = await supabase
-                .from('meetings')
-                .select('id, title, created_at, status')
-                .eq('user_id', session.user.id)
-                .order('created_at', { ascending: false })
-                .limit(10)
+            const allActivities: Activity[] = [
+                ...(meetings.data || []).map(m => ({ id: m.id, type: 'meeting' as const, action: 'created' as const, title: m.title, timestamp: m.created_at })),
+                ...(notes.data || []).map(n => ({ id: n.id, type: 'note' as const, action: 'created' as const, title: n.content?.slice(0, 50) || 'Note', timestamp: n.created_at })),
+                ...(contacts.data || []).map(c => ({ id: c.id, type: 'contact' as const, action: 'created' as const, title: c.email, timestamp: c.created_at })),
+            ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 30)
 
-            meetings?.forEach((m) => {
-                allActivities.push({
-                    id: `meeting-${m.id}`,
-                    type: 'meeting',
-                    action: m.status === 'completed' ? 'completed' : 'created',
-                    title: m.title || 'Untitled Meeting',
-                    createdAt: new Date(m.created_at),
-                    link: `/meetings/${m.id}`,
-                })
-            })
-
-            // Recent contacts
-            const { data: contacts } = await supabase
-                .from('contacts')
-                .select('id, name, created_at')
-                .eq('user_id', session.user.id)
-                .order('created_at', { ascending: false })
-                .limit(10)
-
-            contacts?.forEach((c) => {
-                allActivities.push({
-                    id: `contact-${c.id}`,
-                    type: 'contact',
-                    action: 'created',
-                    title: c.name,
-                    createdAt: new Date(c.created_at),
-                    link: `/contacts`,
-                })
-            })
-
-            // Recent notes
-            const { data: notes } = await supabase
-                .from('notes')
-                .select('id, content, created_at')
-                .eq('user_id', session.user.id)
-                .order('created_at', { ascending: false })
-                .limit(10)
-
-            notes?.forEach((n) => {
-                allActivities.push({
-                    id: `note-${n.id}`,
-                    type: 'note',
-                    action: 'created',
-                    title: n.content?.substring(0, 50) + '...' || 'Note',
-                    createdAt: new Date(n.created_at),
-                    link: `/notes`,
-                })
-            })
-
-            // Sort by date
-            allActivities.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-            setActivities(allActivities.slice(0, 20))
+            setActivities(allActivities)
             setLoading(false)
         }
-
-        fetchActivity()
+        loadActivity()
     }, [])
 
-    const getIcon = (type: string) => {
-        switch (type) {
-            case 'meeting': return '📅'
-            case 'contact': return '👤'
-            case 'note': return '📝'
-            default: return '📌'
-        }
-    }
+    const getIcon = (type: string) => ({ meeting: '📅', note: '📝', contact: '👤' }[type] || '📋')
+    const getColor = (type: string) => ({ meeting: 'text-blue-400', note: 'text-green-400', contact: 'text-purple-400' }[type] || 'text-gray-400')
 
-    const getActionText = (action: string) => {
-        switch (action) {
-            case 'created': return 'Created'
-            case 'updated': return 'Updated'
-            case 'completed': return 'Completed'
-            default: return action
-        }
-    }
-
-    const formatTime = (date: Date) => {
-        const now = new Date()
-        const diff = now.getTime() - date.getTime()
-        const minutes = Math.floor(diff / 60000)
-        const hours = Math.floor(diff / 3600000)
-        const days = Math.floor(diff / 86400000)
-
-        if (minutes < 60) return `${minutes}m ago`
-        if (hours < 24) return `${hours}h ago`
-        return `${days}d ago`
-    }
-
-    if (loading) {
-        return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="max-w-2xl mx-auto animate-pulse">
-                    <div className="h-8 bg-gray-700 rounded w-1/4 mb-8"></div>
-                    {[1, 2, 3, 4, 5].map(i => (
-                        <div key={i} className="bg-gray-800 rounded-xl p-4 mb-3 h-16"></div>
-                    ))}
-                </div>
-            </div>
-        )
-    }
+    if (loading) return <div className="container mx-auto px-4 py-8"><div className="max-w-3xl mx-auto animate-pulse"><div className="h-8 bg-gray-700 rounded w-1/4 mb-8"></div>{[1, 2, 3, 4, 5].map(i => <div key={i} className="bg-gray-800 rounded-xl p-4 h-16 mb-3"></div>)}</div></div>
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <div className="max-w-2xl mx-auto">
-                <h1 className="text-3xl font-bold text-white mb-2">Activity Feed</h1>
-                <p className="text-gray-400 mb-8">Your recent actions and updates</p>
-
-                <div className="relative">
-                    {/* Timeline line */}
-                    <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-gray-700"></div>
-
-                    {activities.map((activity) => (
-                        <Link
-                            key={activity.id}
-                            href={activity.link}
-                            className="block relative pl-14 pb-6 hover:bg-gray-800/30 rounded-lg -ml-2 p-2 transition-colors"
-                        >
-                            {/* Timeline dot */}
-                            <div className="absolute left-3 top-3 w-5 h-5 rounded-full bg-gray-800 border-2 border-blue-500 flex items-center justify-center text-xs">
-                                {getIcon(activity.type)}
-                            </div>
-
-                            <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <span className={`text-xs font-medium px-2 py-0.5 rounded ${activity.action === 'completed' ? 'bg-green-900/50 text-green-400' :
-                                                activity.action === 'created' ? 'bg-blue-900/50 text-blue-400' :
-                                                    'bg-purple-900/50 text-purple-400'
-                                            }`}>
-                                            {getActionText(activity.action)}
-                                        </span>
-                                        <p className="text-white mt-1">{activity.title}</p>
-                                    </div>
-                                    <span className="text-gray-500 text-sm">{formatTime(activity.createdAt)}</span>
+            <div className="max-w-3xl mx-auto">
+                <div className="flex items-center gap-3 mb-8"><span className="text-4xl">📋</span><div><h1 className="text-3xl font-bold text-white">Activity</h1><p className="text-gray-400">Your recent actions</p></div></div>
+                {activities.length === 0 ? (
+                    <div className="text-center py-16 bg-gray-800 rounded-xl border border-gray-700"><div className="text-6xl mb-4">📋</div><div className="text-gray-400">No activity yet</div></div>
+                ) : (
+                    <div className="space-y-3">
+                        {activities.map(a => (
+                            <div key={`${a.type}-${a.id}`} className="bg-gray-800 rounded-xl p-4 border border-gray-700 flex items-center gap-4">
+                                <span className="text-2xl">{getIcon(a.type)}</span>
+                                <div className="flex-1 min-w-0">
+                                    <div className={`font-medium ${getColor(a.type)} capitalize`}>{a.type} {a.action}</div>
+                                    <div className="text-white truncate">{a.title}</div>
                                 </div>
+                                <div className="text-gray-500 text-sm whitespace-nowrap">{new Date(a.timestamp).toLocaleDateString()}</div>
                             </div>
-                        </Link>
-                    ))}
-
-                    {activities.length === 0 && (
-                        <div className="bg-gray-800 rounded-xl p-8 border border-gray-700 text-center">
-                            <div className="text-4xl mb-3">📭</div>
-                            <h3 className="text-white font-medium mb-1">No activity yet</h3>
-                            <p className="text-gray-400 text-sm">Create a meeting, contact, or note to see your activity here</p>
-                        </div>
-                    )}
-                </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     )
