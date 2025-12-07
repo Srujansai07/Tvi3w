@@ -4,10 +4,11 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 const apiKey = process.env.GEMINI_API_KEY || ''
 const genAI = new GoogleGenerativeAI(apiKey)
 
-// Get the Gemini model - using gemini-1.5-flash (fast and free tier)
+// Get the Gemini model
 export function getGeminiModel() {
-    return genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    return genAI.getGenerativeModel({ model: 'gemini-pro' })
 }
+
 
 // Summarize meeting notes
 export async function summarizeMeeting(notes: string, meetingTitle?: string): Promise<string> {
