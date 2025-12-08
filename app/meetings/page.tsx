@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import SearchBar from '@/components/ui/search-bar'
 import FilterChips from '@/components/ui/filter-chips'
+import LoginPrompt, { useLoginPrompt } from '@/components/ui/login-prompt'
 
 interface Meeting {
     id: string
@@ -24,6 +25,28 @@ const statusOptions = [
     { value: 'cancelled', label: 'Cancelled' },
 ]
 
+// Demo data for guests
+const demoMeetings: Meeting[] = [
+    {
+        id: 'demo-1',
+        title: 'Team Standup (Demo)',
+        description: 'Daily team sync meeting',
+        start_time: new Date().toISOString(),
+        location: 'Virtual - Zoom',
+        status: 'scheduled',
+        meeting_type: 'standup'
+    },
+    {
+        id: 'demo-2',
+        title: 'Client Presentation (Demo)',
+        description: 'Q4 results presentation',
+        start_time: new Date(Date.now() + 86400000).toISOString(),
+        location: 'Conference Room A',
+        status: 'scheduled',
+        meeting_type: 'presentation'
+    },
+]
+
 export default function MeetingsPage() {
     const supabase = createClient()
     const router = useRouter()
@@ -33,15 +56,23 @@ export default function MeetingsPage() {
     const [error, setError] = useState<string | null>(null)
     const [searchQuery, setSearchQuery] = useState('')
     const [statusFilter, setStatusFilter] = useState('all')
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
+    const { isOpen, message, showLoginPrompt, closeLoginPrompt } = useLoginPrompt()
 
     useEffect(() => {
         async function fetchMeetings() {
             const { data: { session } } = await supabase.auth.getSession()
+
             if (!session) {
-                router.push('/login')
+                // Guest mode - show demo data
+                setIsLoggedIn(false)
+                setMeetings(demoMeetings)
+                setFilteredMeetings(demoMeetings)
+                setLoading(false)
                 return
             }
 
+            setIsLoggedIn(true)
             const { data, error } = await supabase
                 .from('meetings')
                 .select('*')
@@ -58,6 +89,7 @@ export default function MeetingsPage() {
         }
         fetchMeetings()
     }, [])
+
 
     useEffect(() => {
         let result = meetings
@@ -96,19 +128,47 @@ export default function MeetingsPage() {
 
     return (
         <div className="container mx-auto px-4 py-8">
+            <LoginPrompt isOpen={isOpen} onClose={closeLoginPrompt} message={message} />
+
             <div className="max-w-4xl mx-auto">
+                {/* Guest Mode Banner */}
+                {!isLoggedIn && (
+                    <div className="mb-6 bg-gradient-to-r from-blue-900/50 to-purple-900/50 border border-blue-700/50 rounded-xl p-4 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <span className="text-2xl">👋</span>
+                            <div>
+                                <p className="text-white font-medium">You're in Guest Mode</p>
+                                <p className="text-gray-400 text-sm">Sign in to save your meetings and access all features</p>
+                            </div>
+                        </div>
+                        <Link href="/login" className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-medium transition-colors">
+                            Sign In
+                        </Link>
+                    </div>
+                )}
+
                 <div className="flex justify-between items-center mb-6">
                     <div>
                         <h1 className="text-3xl font-bold text-white mb-2">Meetings</h1>
                         <p className="text-gray-400">Manage your meetings and appointments</p>
                     </div>
-                    <Link
-                        href="/meetings/new"
-                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors flex items-center gap-2"
-                    >
-                        <span>+</span> New Meeting
-                    </Link>
+                    {isLoggedIn ? (
+                        <Link
+                            href="/meetings/new"
+                            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors flex items-center gap-2"
+                        >
+                            <span>+</span> New Meeting
+                        </Link>
+                    ) : (
+                        <button
+                            onClick={() => showLoginPrompt('Sign in to create and save your meetings.')}
+                            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors flex items-center gap-2"
+                        >
+                            <span>+</span> New Meeting
+                        </button>
+                    )}
                 </div>
+
 
                 {/* Search and Filter */}
                 <div className="mb-6 space-y-4">
@@ -156,9 +216,9 @@ export default function MeetingsPage() {
                                     </div>
                                     <div className="ml-4">
                                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${meeting.status === 'completed' ? 'bg-green-900/50 text-green-400 border border-green-800' :
-                                                meeting.status === 'scheduled' ? 'bg-blue-900/50 text-blue-400 border border-blue-800' :
-                                                    meeting.status === 'cancelled' ? 'bg-red-900/50 text-red-400 border border-red-800' :
-                                                        'bg-gray-700 text-gray-400 border border-gray-600'
+                                            meeting.status === 'scheduled' ? 'bg-blue-900/50 text-blue-400 border border-blue-800' :
+                                                meeting.status === 'cancelled' ? 'bg-red-900/50 text-red-400 border border-red-800' :
+                                                    'bg-gray-700 text-gray-400 border border-gray-600'
                                             }`}>
                                             {meeting.status || 'draft'}
                                         </span>

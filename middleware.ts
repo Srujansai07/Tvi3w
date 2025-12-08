@@ -7,14 +7,11 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
     matcher: [
+        // Only these routes need middleware session handling
         '/dashboard/:path*',
-        '/analysis/:path*',
-        '/meetings/:path*',
-        '/business/:path*',
-        '/contacts/:path*',
-        '/notes/:path*',
         '/profile/:path*',
         '/auth/:path*',
         '/login',
     ],
 }
+
