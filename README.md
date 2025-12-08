@@ -56,7 +56,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 GEMINI_API_KEY=your_gemini_api_key
 
 # NextAuth
-NEXTAUTH_URL=https://tvi3w-v2-srujansais-projects.vercel.app
+NEXTAUTH_URL=https://tvi3w-v2.vercel.app
 NEXTAUTH_SECRET=your_secret_here
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
@@ -73,7 +73,7 @@ GITHUB_SECRET=your_github_secret
 npm run dev
 ```
 
-6. Open [https://tvi3w-v2-srujansais-projects.vercel.app](https://tvi3w-v2-srujansais-projects.vercel.app)
+6. Open [https://tvi3w-v2.vercel.app](https://tvi3w-v2.vercel.app)
 
 ## 📚 Documentation
 

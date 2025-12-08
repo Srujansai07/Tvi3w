@@ -96,7 +96,7 @@ let wsClient: WebSocketClient | null = null
 
 export function getWebSocketClient(): WebSocketClient {
     if (!wsClient) {
-        const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'wss://tvi3w-v2-srujansais-projects.vercel.app'
+        const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'wss://tvi3w-v2.vercel.app'
         wsClient = new WebSocketClient(wsUrl)
     }
     return wsClient

@@ -21,7 +21,7 @@ DATABASE_URL=postgresql://postgres:[YOUR_PASSWORD]@db.rnmsrpqwligboxggnktq.supab
 GEMINI_API_KEY=AIzaSyDzH-UHaBU3glILoOr9moaR8aGeg88tWv8
 
 # NextAuth
-NEXTAUTH_URL=https://tvi3w-v2-srujansais-projects.vercel.app
+NEXTAUTH_URL=https://tvi3w-v2.vercel.app
 NEXTAUTH_SECRET=[GENERATE_RANDOM_SECRET]
 
 # OAuth (Optional)
