@@ -18,7 +18,7 @@ DATABASE_URL=postgresql://postgres:231100813aiiTgn@db.ptkoregmemknufnpnnfc.supab
 GEMINI_API_KEY=AIzaSyDzH-UHaBU3glILoOr9moaR8aGeg88tWv8
 
 # App URL
-NEXT_PUBLIC_APP_URL=https://tvi3w-v2.vercel.app
+NEXT_PUBLIC_APP_URL=https://tvi3w-ai.vercel.app
 ```
 
 ### For Vercel Production
