@@ -19,11 +19,12 @@ export default function LoginPage() {
         setError(null)
         try {
             if (view === 'sign-up') {
+                const redirectUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin
                 const { error } = await supabase.auth.signUp({
                     email,
                     password,
                     options: {
-                        emailRedirectTo: `${location.origin}/auth/callback`,
+                        emailRedirectTo: `${redirectUrl}/auth/callback`,
                     },
                 })
                 if (error) throw error
@@ -48,10 +49,11 @@ export default function LoginPage() {
         try {
             setLoading(true)
             setError(null)
+            const redirectUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin
             const { error } = await supabase.auth.signInWithOAuth({
                 provider,
                 options: {
-                    redirectTo: `${location.origin}/auth/callback`,
+                    redirectTo: `${redirectUrl}/auth/callback`,
                 },
             })
             if (error) throw error
@@ -108,8 +110,9 @@ export default function LoginPage() {
                                         return
                                     }
                                     setLoading(true)
+                                    const resetUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin
                                     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                                        redirectTo: `${location.origin}/auth/callback?next=/reset-password`,
+                                        redirectTo: `${resetUrl}/auth/callback?next=/reset-password`,
                                     })
                                     setLoading(false)
                                     if (error) setError(error.message)
