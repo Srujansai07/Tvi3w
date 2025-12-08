@@ -13,7 +13,7 @@ Create `.env.local`:
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 GEMINI_API_KEY=your_gemini_api_key
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=https://tvi3w-v2-srujansais-projects.vercel.app
 ```
 
 ### 3. Run Development Server
@@ -21,7 +21,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 npm run dev
 ```
 
-Visit: http://localhost:3000
+Visit: https://tvi3w-v2-srujansais-projects.vercel.app
 
 ## Getting API Keys
 

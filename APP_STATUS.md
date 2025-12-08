@@ -3,7 +3,7 @@
 ## ✅ EVERYTHING IS WORKING!
 
 ### Current Status (December 7, 2025)
-- **Server**: Running on `http://localhost:3001`
+- **Server**: Production at `https://tvi3w-v2-srujansais-projects.vercel.app`
 - **Authentication**: Google OAuth ✓
 - **Database**: Supabase connected ✓
 - **AI**: Google Gemini integrated ✓
@@ -160,7 +160,7 @@ WHERE name IS NULL;
 
 ## 🚀 How to Use Right Now
 
-1. **Go to**: `http://localhost:3001`
+1. **Go to**: `https://tvi3w-v2-srujansais-projects.vercel.app`
 2. **Login**: Click "Get Started" → Sign in with Google
 3. **Explore**: All pages are functional and beautiful
 4. **Run SQL**: Execute the migration above in Supabase
