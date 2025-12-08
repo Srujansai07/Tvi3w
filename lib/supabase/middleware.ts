@@ -57,7 +57,7 @@ export async function updateSession(request: NextRequest) {
     const { data: { session } } = await supabase.auth.getSession()
 
     // Protected routes that require authentication
-    const protectedPaths = ['/dashboard', '/analysis', '/meetings', '/business']
+    const protectedPaths = ['/dashboard', '/analysis', '/meetings', '/business', '/contacts', '/notes', '/profile']
     const isProtectedPath = protectedPaths.some(path => request.nextUrl.pathname.startsWith(path))
 
     // If accessing a protected route without a session, redirect to login
@@ -67,8 +67,10 @@ export async function updateSession(request: NextRequest) {
         return NextResponse.redirect(redirectUrl)
     }
 
-    // If user is logged in and tries to access login page, redirect to dashboard
-    if (request.nextUrl.pathname === '/login' && session) {
+    // If user is logged in and tries to access login or auth/signin page, redirect to dashboard
+    const authPaths = ['/login', '/auth/signin']
+    const isAuthPath = authPaths.some(path => request.nextUrl.pathname.startsWith(path))
+    if (isAuthPath && session) {
         return NextResponse.redirect(new URL('/dashboard', request.url))
     }
 

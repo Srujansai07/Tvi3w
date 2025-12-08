@@ -11,6 +11,10 @@ export const config = {
         '/analysis/:path*',
         '/meetings/:path*',
         '/business/:path*',
+        '/contacts/:path*',
+        '/notes/:path*',
+        '/profile/:path*',
+        '/auth/:path*',
         '/login',
     ],
 }
