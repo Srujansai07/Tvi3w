@@ -1,14 +1,15 @@
-import { auth } from "@/auth"
-import { redirect } from "next/navigation"
+import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 
 export default async function AuthLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
-    const session = await auth()
+    const supabase = createClient()
+    const { data: { session } } = await supabase.auth.getSession()
 
-    // If already authenticated, redirect to dashboard
+    // If already authenticated with Supabase, redirect to dashboard
     if (session) {
         redirect('/dashboard')
     }
