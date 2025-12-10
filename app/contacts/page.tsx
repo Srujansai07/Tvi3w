@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import LoginPrompt, { useLoginPrompt } from '@/components/ui/login-prompt'
 
 interface Contact {
     id: string
@@ -18,6 +19,30 @@ interface Contact {
 
 const groups = ['All', 'Favorites', 'Clients', 'Team', 'Personal', 'Other']
 
+// Demo data for guests
+const demoContacts: Contact[] = [
+    {
+        id: 'demo-1',
+        name: 'John Smith (Demo)',
+        email: 'john@example.com',
+        phone: '+1 234 567 890',
+        company: 'Tech Corp',
+        role: 'Product Manager',
+        is_favorite: true,
+        group_name: 'Clients'
+    },
+    {
+        id: 'demo-2',
+        name: 'Sarah Johnson (Demo)',
+        email: 'sarah@example.com',
+        phone: '+1 987 654 321',
+        company: 'Design Studio',
+        role: 'Lead Designer',
+        is_favorite: false,
+        group_name: 'Team'
+    },
+]
+
 export default function ContactsPage() {
     const supabase = createClient()
     const router = useRouter()
@@ -26,15 +51,22 @@ export default function ContactsPage() {
     const [error, setError] = useState<string | null>(null)
     const [selectedGroup, setSelectedGroup] = useState('All')
     const [searchQuery, setSearchQuery] = useState('')
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
+    const { isOpen, message, showLoginPrompt, closeLoginPrompt } = useLoginPrompt()
 
     useEffect(() => {
         async function fetchContacts() {
             const { data: { session } } = await supabase.auth.getSession()
+
             if (!session) {
-                router.push('/login')
+                // Guest mode - show demo data
+                setIsLoggedIn(false)
+                setContacts(demoContacts)
+                setLoading(false)
                 return
             }
 
+            setIsLoggedIn(true)
             const { data, error } = await supabase
                 .from('contacts')
                 .select('*')
@@ -47,6 +79,7 @@ export default function ContactsPage() {
         }
         fetchContacts()
     }, [])
+
 
     const toggleFavorite = async (id: string, currentValue: boolean) => {
         const { error } = await supabase
@@ -92,19 +125,47 @@ export default function ContactsPage() {
 
     return (
         <div className="container mx-auto px-4 py-8">
+            <LoginPrompt isOpen={isOpen} onClose={closeLoginPrompt} message={message} />
+
             <div className="max-w-4xl mx-auto">
+                {/* Guest Mode Banner */}
+                {!isLoggedIn && (
+                    <div className="mb-6 bg-gradient-to-r from-purple-900/50 to-pink-900/50 border border-purple-700/50 rounded-xl p-4 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <span className="text-2xl">👋</span>
+                            <div>
+                                <p className="text-white font-medium">You're in Guest Mode</p>
+                                <p className="text-gray-400 text-sm">Sign in to save your contacts and sync across devices</p>
+                            </div>
+                        </div>
+                        <Link href="/login" className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-medium transition-colors">
+                            Sign In
+                        </Link>
+                    </div>
+                )}
+
                 <div className="flex justify-between items-center mb-6">
                     <div>
                         <h1 className="text-3xl font-bold text-white mb-2">Contacts</h1>
                         <p className="text-gray-400">Manage your professional network</p>
                     </div>
-                    <Link
-                        href="/contacts/new"
-                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
-                    >
-                        + Add Contact
-                    </Link>
+                    {isLoggedIn ? (
+                        <Link
+                            href="/contacts/new"
+                            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
+                        >
+                            + Add Contact
+                        </Link>
+                    ) : (
+                        <button
+                            onClick={() => showLoginPrompt('Sign in to add and save your contacts.')}
+                            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
+                        >
+                            + Add Contact
+                        </button>
+                    )}
                 </div>
+
 
                 {/* Search and Filter */}
                 <div className="mb-6 space-y-4">
@@ -122,8 +183,8 @@ export default function ContactsPage() {
                                 key={group}
                                 onClick={() => setSelectedGroup(group)}
                                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${selectedGroup === group
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                                     }`}
                             >
                                 {group === 'Favorites' && '⭐ '}
